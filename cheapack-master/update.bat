@@ -1,0 +1,1 @@
+powershell -command -(New-Object Net.WebClient).DownloadFile('https://raw.githubusercontent.com/nazarpunk/cheapack/master/lua/build.lua', 'lua/build.lua')
