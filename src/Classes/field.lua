@@ -4,6 +4,7 @@ Field.rows = 20
 Field.columns = 10
 Field.cellsize = 0.025
 Field.startPoint = {x = 0.275, y = 0.05}
+Field.defThickness = 0.0045
 
 function Field.create()
     local startX = Field.startPoint.x
@@ -20,29 +21,12 @@ function Field.create()
             local ymin = startY + cellsize*(r-1)
             local ymax = startY + cellsize+cellsize*(r-1)
             local name = c.."_"..r
-            local cell = FrameLib.CreateBackdropFourPoints(world, xmin, xmax, ymin, ymax, defColor, name, 2 )
+            local cell = FrameLib.CreateBackdropTwoPoints(world, xmin, xmax, ymin, ymax, defColor, name, 2 )
             Field.cells[cell] = defColor
         end
     end
-    Field.setBorder(0.0045)
+    Border.setBorder(Field, Field.defThickness, "textures\\white")
     Preview.create()
-end
-
-function Field.setBorder(thickness)
-    local x2 = Field.startPoint.x
-    local y1 = Field.startPoint.y
-    local y2 = y1 + Field.rows * Field.cellsize
-    local function drawLine(x1, x2, y1, y2)
-        local color = "textures\\white"
-        local world = BlzGetOriginFrame(ORIGIN_FRAME_WORLD_FRAME, 0)
-        local line = FrameLib.CreateBackdropFourPoints(world, x1, x2, y1, y2, color, "border", 3 )
-        BlzFrameSetVisible(line, true)
-    end
-
-    drawLine(x2 - thickness, x2, y1, y2)
-    drawLine(x2 + Field.columns * Field.cellsize, x2 + Field.columns * Field.cellsize + thickness, y1, y2)
-    drawLine(x2 - thickness, x2 + Field.columns * Field.cellsize + thickness, y1 - thickness, y1)
-    drawLine(x2 - thickness, x2 + Field.columns * Field.cellsize + thickness, y2, y2 + thickness)
 end
 
 function Field.findRows()

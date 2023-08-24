@@ -7,7 +7,6 @@ IShape.s2 = {x = 5, y = 19}
 IShape.s3 = {x = 6, y = 19}
 IShape.s4 = {x = 7, y = 19}
 table.insert(Figure.shapes, IShape)
---Type: line4
 
 function IShape:new()
     local iShape = Figure:new()
@@ -23,6 +22,7 @@ function IShape:new()
 end
 
 function IShape:rotate(direction)
+    --Type: line4
     local newSegments = Line4.rotate(self.segments, direction)
 
     Figure.rotate(self, newSegments, direction)

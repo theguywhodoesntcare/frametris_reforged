@@ -7,7 +7,6 @@ TShape.s2 = {x = 5, y = 19} --center
 TShape.s3 = {x = 6, y = 19}
 TShape.s4 = {x = 5, y = 20}
 table.insert(Figure.shapes, TShape)
---Type: matrix3
 
 function TShape:new()
     local tShape = Figure:new()
@@ -23,6 +22,7 @@ function TShape:new()
 end
 
 function TShape:rotate(direction)
+    --Type: matrix3
     local newSegments = Matrix3.rotate(self.segments, direction)
 
     Figure.rotate(self, newSegments, direction)

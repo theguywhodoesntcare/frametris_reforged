@@ -7,7 +7,6 @@ JShape.s2 = {x = 4, y = 19}
 JShape.s3 = {x = 5, y = 19} --center
 JShape.s4 = {x = 6, y = 19}
 table.insert(Figure.shapes, JShape)
---Type: matrix3
 
 function JShape:new()
     local jShape = Figure:new()
@@ -23,6 +22,7 @@ function JShape:new()
 end
 
 function JShape:rotate(direction)
+    --Type: matrix3
     local newSegments = Matrix3.rotate(self.segments, direction)
 
     Figure.rotate(self, newSegments, direction)

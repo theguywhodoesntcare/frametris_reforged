@@ -7,7 +7,6 @@ ZShape.s2 = {x = 5, y = 20}
 ZShape.s3 = {x = 5, y = 19} --center
 ZShape.s4 = {x = 6, y = 19}
 table.insert(Figure.shapes, ZShape)
---Type: matrix3
 
 function ZShape:new()
     local zShape = Figure:new()
@@ -23,6 +22,7 @@ function ZShape:new()
 end
 
 function ZShape:rotate(direction)
+    --Type: matrix3
     local newSegments = Matrix3.rotate(self.segments, direction)
 
     Figure.rotate(self, newSegments, direction)

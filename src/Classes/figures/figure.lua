@@ -85,7 +85,7 @@ function Figure:startTimer()
     local softDropTimer = self.softDropTimer
     TimerStart(softDropTimer, 0.1, true, function()
         if not isStopped then
-            if Triggers.keyState[Triggers.softDropKey] then
+            if Triggers.keyState[Keys.softDropKey] then
                 self:moveDown()
             end
         end
@@ -95,6 +95,8 @@ function Figure:startTimer()
             if not isStopped then
                 isStopped = true
             else
+                PauseTimer(t)
+                PauseTimer(softDropTimer)
                 Game.checkField()
                 DestroyTimer(t)
             end

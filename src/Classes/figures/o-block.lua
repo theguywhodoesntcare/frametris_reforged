@@ -7,7 +7,6 @@ OShape.s2 = {x = 6, y = 20}
 OShape.s3 = {x = 5, y = 19}
 OShape.s4 = {x = 6, y = 19}
 table.insert(Figure.shapes, OShape)
---Type: non-rotatable
 
 function OShape:new()
     local oShape = Figure:new()
@@ -22,6 +21,7 @@ function OShape:new()
     return oShape
 end
 
-function OShape:rotateNew(direction)
+function OShape:rotate(direction)
+    --Type: non-rotatable
     return
 end

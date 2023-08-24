@@ -31,6 +31,7 @@ function Game.load()
             UI.load()
             Game.start()
             Triggers.initKeyTrigger()
+            math.randomseed(os.time())
         end
     end
 end

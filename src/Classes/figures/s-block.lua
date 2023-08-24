@@ -7,7 +7,6 @@ SShape.s2 = {x = 5, y = 19} --center
 SShape.s3 = {x = 5, y = 20}
 SShape.s4 = {x = 6, y = 20}
 table.insert(Figure.shapes, SShape)
---Type: matrix3
 
 function SShape:new()
     local sShape = Figure:new()
@@ -23,6 +22,7 @@ function SShape:new()
 end
 
 function SShape:rotate(direction)
+    --Type: matrix3
     local newSegments = Matrix3.rotate(self.segments, direction)
 
     Figure.rotate(self, newSegments, direction)

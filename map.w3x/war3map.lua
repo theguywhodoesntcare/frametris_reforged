@@ -18,7 +18,7 @@ function FrameLib.HideDefaultUI()
 end
 
 
-function FrameLib.CreateBackdropFourPoints(parent, xmin, xmax, ymin, ymax, texture, name, lvl)
+function FrameLib.CreateBackdropTwoPoints(parent, xmin, xmax, ymin, ymax, texture, name, lvl)
     local fr = BlzCreateFrameByType("BACKDROP", name, parent, "", 1)
     BlzFrameSetLevel(fr, lvl)
     BlzFrameSetAbsPoint(fr, FRAMEPOINT_TOPLEFT, xmin, ymax)
@@ -40,9 +40,32 @@ function FrameLib.CreateText(parent, centerX, centerY, size, text, lvl)
     return fr
 end
 
+function FrameLib.CreateTextTwoPoints(parent, centerX, centerY, size, text, lvl)
+    local fr = BlzCreateFrameByType("TEXT", "", parent, "", 0)
+    BlzFrameSetLevel(fr, lvl)
+    BlzFrameSetAbsPoint(fr, FRAMEPOINT_CENTER, centerX, centerY)
+    BlzFrameSetSize(fr, size, size)
+    BlzFrameSetText(fr, text)
+    BlzFrameSetEnable(fr, false)
+    BlzFrameSetScale(fr, 1)
+    BlzFrameSetTextAlignment(fr, TEXT_JUSTIFY_CENTER, TEXT_JUSTIFY_MIDDLE)
+    return fr
+end
+
 function FrameLib.ClickBlocker()
     local fr = FrameLib.CreateText(BlzGetFrameByName("ConsoleUIBackdrop", 0), 0.4, 0.3, 1.2, "", 1)
     BlzFrameSetEnable(fr, true)
+end
+
+function FrameLib.createSprite(model, cam, x, y, scale, parent, lvl)
+    local fr = BlzCreateFrameByType("SPRITE", "", parent, "", 0)
+    BlzFrameSetAbsPoint(fr, FRAMEPOINT_CENTER, x, y)
+    BlzFrameSetLevel(fr, lvl)
+    BlzFrameSetSize(fr, 0.001, 0.001)
+    BlzFrameSetModel(fr, model, cam)
+    BlzFrameSetScale(fr, scale)
+
+    return fr
 end
 Cell = {} --экземпляры клеток не нужны, просто static обёртка над frame api
 
@@ -77,6 +100,7 @@ Field.rows = 20
 Field.columns = 10
 Field.cellsize = 0.025
 Field.startPoint = {x = 0.275, y = 0.05}
+Field.defThickness = 0.0045
 
 function Field.create()
     local startX = Field.startPoint.x
@@ -93,29 +117,12 @@ function Field.create()
             local ymin = startY + cellsize*(r-1)
             local ymax = startY + cellsize+cellsize*(r-1)
             local name = c.."_"..r
-            local cell = FrameLib.CreateBackdropFourPoints(world, xmin, xmax, ymin, ymax, defColor, name, 2 )
+            local cell = FrameLib.CreateBackdropTwoPoints(world, xmin, xmax, ymin, ymax, defColor, name, 2 )
             Field.cells[cell] = defColor
         end
     end
-    Field.setBorder(0.0045)
+    Border.setBorder(Field, Field.defThickness, "textures\\white")
     Preview.create()
-end
-
-function Field.setBorder(thickness)
-    local x2 = Field.startPoint.x
-    local y1 = Field.startPoint.y
-    local y2 = y1 + Field.rows * Field.cellsize
-    local function drawLine(x1, x2, y1, y2)
-        local color = "textures\\white"
-        local world = BlzGetOriginFrame(ORIGIN_FRAME_WORLD_FRAME, 0)
-        local line = FrameLib.CreateBackdropFourPoints(world, x1, x2, y1, y2, color, "border", 3 )
-        BlzFrameSetVisible(line, true)
-    end
-
-    drawLine(x2 - thickness, x2, y1, y2)
-    drawLine(x2 + Field.columns * Field.cellsize, x2 + Field.columns * Field.cellsize + thickness, y1, y2)
-    drawLine(x2 - thickness, x2 + Field.columns * Field.cellsize + thickness, y1 - thickness, y1)
-    drawLine(x2 - thickness, x2 + Field.columns * Field.cellsize + thickness, y2, y2 + thickness)
 end
 
 function Field.findRows()
@@ -273,14 +280,16 @@ end
 Preview = {}
 Preview.cells = {}
 Preview.cellsize = Field.cellsize
+Preview.rows = 4
+Preview.columns = 4
 Preview.startPoint = {x = 0.15, y = 0.45}
-Preview.ftable = {}
+Preview.fTable = {}
 
 function Preview.create()
     local cellsize = Preview.cellsize
     local x = Preview.startPoint.x
     local y = Preview.startPoint.y
-    Preview.setBorder(0.0045)
+    Border.setBorder(Preview, Field.defThickness, "textures\\white")
     Preview.build(cellsize, x, y, 4, 4, 3, "matrix4")
     Preview.build(cellsize,x + cellsize / 2, y + cellsize / 4, 3, 3, 4, "matrix3")
 end
@@ -295,15 +304,15 @@ function Preview.build(cellsize, startX, startY, rows, columns, lvl, prefix)
             local ymin = startY + cellsize*(r-1)
             local ymax = startY + cellsize+cellsize*(r-1)
             local name = prefix..c.."_"..r
-            local cell = FrameLib.CreateBackdropFourPoints(world, xmin, xmax, ymin, ymax, defColor, name, lvl )
+            local cell = FrameLib.CreateBackdropTwoPoints(world, xmin, xmax, ymin, ymax, defColor, name, lvl )
             Preview.cells[cell] = defColor
-            table.insert(Preview.ftable, cell)
+            table.insert(Preview.fTable, cell)
         end
     end
 end
 
 function Preview.clear()
-    local field = Preview.ftable
+    local field = Preview.fTable
     for i = 1, #field do
         BlzFrameSetVisible(field[i], false)
     end
@@ -318,34 +327,11 @@ function Preview.paint(figure)
     for i = 1, #segments do
         local x = segments[i].x - 3
         local y = segments[i].y - 17
-        local fr = BlzGetFrameByName(prefix..x.."_"..y, 1)
-        BlzFrameSetTexture(fr, figure.color, 0, true)
-        BlzFrameSetVisible(fr, true)
+        x = prefix..x
+        Cell.setColor(x, y, figure.color)
     end
 end
 
-function Preview.setBorder(thickness)
-    local rows = 4
-    local columns = 4
-    local x2 = Preview.startPoint.x
-    local y1 = Preview.startPoint.y
-    local y2 = y1 + rows * Preview.cellsize
-    local world = BlzGetOriginFrame(ORIGIN_FRAME_WORLD_FRAME, 0)
-    local function drawLine(x1, x2, y1, y2)
-        local color = "textures\\white"
-        local line = FrameLib.CreateBackdropFourPoints(world, x1, x2, y1, y2, color, "border", 3 )
-        BlzFrameSetVisible(line, true)
-    end
-
-    drawLine(x2 - thickness, x2, y1, y2)
-    drawLine(x2 + columns * Preview.cellsize, x2 + columns * Preview.cellsize + thickness, y1, y2)
-    drawLine(x2 - thickness, x2 + columns * Preview.cellsize + thickness, y1 - thickness, y1)
-    drawLine(x2 - thickness, x2 + columns * Preview.cellsize + thickness, y2, y2 + thickness)
-
-    local cX, cY = x2 + (columns * Preview.cellsize)/2, y2 + 0.062
-    local text = FrameLib.CreateText(world, cX, cY, 0.08, "NEXT", 5)
-    BlzFrameSetScale(text, 2)
-end
 Figure = {}
 Figure.__index = Figure
 Figure.shapes = {}
@@ -433,7 +419,7 @@ function Figure:startTimer()
     local softDropTimer = self.softDropTimer
     TimerStart(softDropTimer, 0.1, true, function()
         if not isStopped then
-            if Triggers.keyState[Triggers.softDropKey] then
+            if Triggers.keyState[Keys.softDropKey] then
                 self:moveDown()
             end
         end
@@ -443,6 +429,8 @@ function Figure:startTimer()
             if not isStopped then
                 isStopped = true
             else
+                PauseTimer(t)
+                PauseTimer(softDropTimer)
                 Game.checkField()
                 DestroyTimer(t)
             end
@@ -564,7 +552,6 @@ IShape.s2 = {x = 5, y = 19}
 IShape.s3 = {x = 6, y = 19}
 IShape.s4 = {x = 7, y = 19}
 table.insert(Figure.shapes, IShape)
---Type: line4
 
 function IShape:new()
     local iShape = Figure:new()
@@ -580,6 +567,7 @@ function IShape:new()
 end
 
 function IShape:rotate(direction)
+    --Type: line4
     local newSegments = Line4.rotate(self.segments, direction)
 
     Figure.rotate(self, newSegments, direction)
@@ -595,7 +583,6 @@ JShape.s2 = {x = 4, y = 19}
 JShape.s3 = {x = 5, y = 19} --center
 JShape.s4 = {x = 6, y = 19}
 table.insert(Figure.shapes, JShape)
---Type: matrix3
 
 function JShape:new()
     local jShape = Figure:new()
@@ -611,6 +598,7 @@ function JShape:new()
 end
 
 function JShape:rotate(direction)
+    --Type: matrix3
     local newSegments = Matrix3.rotate(self.segments, direction)
 
     Figure.rotate(self, newSegments, direction)
@@ -626,7 +614,6 @@ LShape.s2 = {x = 5, y = 19} --center
 LShape.s3 = {x = 6, y = 19}
 LShape.s4 = {x = 6, y = 20}
 table.insert(Figure.shapes, LShape)
---Type: matrix3
 
 function LShape:new()
     local lShape = Figure:new()
@@ -642,6 +629,7 @@ function LShape:new()
 end
 
 function LShape:rotate(direction)
+    --Type: matrix3
     local newSegments = Matrix3.rotate(self.segments, direction)
 
     Figure.rotate(self, newSegments, direction)
@@ -656,7 +644,6 @@ OShape.s2 = {x = 6, y = 20}
 OShape.s3 = {x = 5, y = 19}
 OShape.s4 = {x = 6, y = 19}
 table.insert(Figure.shapes, OShape)
---Type: non-rotatable
 
 function OShape:new()
     local oShape = Figure:new()
@@ -671,7 +658,8 @@ function OShape:new()
     return oShape
 end
 
-function OShape:rotateNew(direction)
+function OShape:rotate(direction)
+    --Type: non-rotatable
     return
 end
 
@@ -684,7 +672,6 @@ SShape.s2 = {x = 5, y = 19} --center
 SShape.s3 = {x = 5, y = 20}
 SShape.s4 = {x = 6, y = 20}
 table.insert(Figure.shapes, SShape)
---Type: matrix3
 
 function SShape:new()
     local sShape = Figure:new()
@@ -700,6 +687,7 @@ function SShape:new()
 end
 
 function SShape:rotate(direction)
+    --Type: matrix3
     local newSegments = Matrix3.rotate(self.segments, direction)
 
     Figure.rotate(self, newSegments, direction)
@@ -713,7 +701,6 @@ TShape.s2 = {x = 5, y = 19} --center
 TShape.s3 = {x = 6, y = 19}
 TShape.s4 = {x = 5, y = 20}
 table.insert(Figure.shapes, TShape)
---Type: matrix3
 
 function TShape:new()
     local tShape = Figure:new()
@@ -729,6 +716,7 @@ function TShape:new()
 end
 
 function TShape:rotate(direction)
+    --Type: matrix3
     local newSegments = Matrix3.rotate(self.segments, direction)
 
     Figure.rotate(self, newSegments, direction)
@@ -742,7 +730,6 @@ ZShape.s2 = {x = 5, y = 20}
 ZShape.s3 = {x = 5, y = 19} --center
 ZShape.s4 = {x = 6, y = 19}
 table.insert(Figure.shapes, ZShape)
---Type: matrix3
 
 function ZShape:new()
     local zShape = Figure:new()
@@ -758,6 +745,7 @@ function ZShape:new()
 end
 
 function ZShape:rotate(direction)
+    --Type: matrix3
     local newSegments = Matrix3.rotate(self.segments, direction)
 
     Figure.rotate(self, newSegments, direction)
@@ -795,6 +783,7 @@ function Game.load()
             UI.load()
             Game.start()
             Triggers.initKeyTrigger()
+            math.randomseed(os.time())
         end
     end
 end
@@ -809,39 +798,37 @@ function Game.gameOver()
 end
 
 
+Keys = {}
+Keys.leftKey = OSKEY_A
+Keys.rightKey = OSKEY_D
+Keys.softDropKey = OSKEY_S
+Keys.hardDropKey = OSKEY_SPACE
+Keys.rotateRightKey = OSKEY_W
+Keys.rotateLeftKey = OSKEY_Q
+Music = {}
+
+function Music.setMusic()
+    StopMusicBJ(false)
+    ClearMapMusicBJ()
+    local path = "Music\\BRD_-_Teleport_Prokg"
+    PlayMusic(path)
+    CustomFrames.setMusicTitle(path)
+end
 Triggers = {}
 Triggers.keyTrigger = CreateTrigger()
-Triggers.leftKey = OSKEY_A
-Triggers.rightKey = OSKEY_D
-Triggers.softDropKey = OSKEY_S
-Triggers.hardDropKey = OSKEY_SPACE
-Triggers.rotateRightKey = OSKEY_W
-Triggers.rotateLeftKey = OSKEY_Q
+Triggers.releaseTrigger = CreateTrigger()
 Triggers.keyState = {}
-
-function Triggers.init()
-
-end
 
 function Triggers.initKeyTrigger()
     local trigger = Triggers.keyTrigger
-    BlzTriggerRegisterPlayerKeyEvent(trigger, GetLocalPlayer(), Triggers.leftKey, 0, true)
-    BlzTriggerRegisterPlayerKeyEvent(trigger, GetLocalPlayer(), Triggers.rightKey, 0, true)
-    BlzTriggerRegisterPlayerKeyEvent(trigger, GetLocalPlayer(), Triggers.softDropKey, 0, true)
-    BlzTriggerRegisterPlayerKeyEvent(trigger, GetLocalPlayer(), Triggers.hardDropKey, 0, true)
-    BlzTriggerRegisterPlayerKeyEvent(trigger, GetLocalPlayer(), Triggers.rotateRightKey, 0, true)
-    BlzTriggerRegisterPlayerKeyEvent(trigger, GetLocalPlayer(), Triggers.rotateLeftKey, 0, true)
+    local releaseTrigger = Triggers.releaseTrigger
+
+    for key, value in pairs(Keys) do
+        BlzTriggerRegisterPlayerKeyEvent(trigger, GetLocalPlayer(), value, 0, true)
+        BlzTriggerRegisterPlayerKeyEvent(releaseTrigger, GetLocalPlayer(), value, 0, false)
+    end
 
     TriggerAddCondition(trigger, Condition(Triggers.ControlKeys))
-
-    local releaseTrigger = CreateTrigger()
-    BlzTriggerRegisterPlayerKeyEvent(releaseTrigger, GetLocalPlayer(), Triggers.leftKey, 0, false)
-    BlzTriggerRegisterPlayerKeyEvent(releaseTrigger, GetLocalPlayer(), Triggers.rightKey, 0, false)
-    BlzTriggerRegisterPlayerKeyEvent(releaseTrigger, GetLocalPlayer(), Triggers.softDropKey, 0, false)
-    BlzTriggerRegisterPlayerKeyEvent(releaseTrigger, GetLocalPlayer(), Triggers.hardDropKey, 0, false)
-    BlzTriggerRegisterPlayerKeyEvent(releaseTrigger, GetLocalPlayer(), Triggers.rotateRightKey, 0,false)
-    BlzTriggerRegisterPlayerKeyEvent(releaseTrigger, GetLocalPlayer(), Triggers.rotateLeftKey, 0,false)
-
     TriggerAddCondition(releaseTrigger, Condition(Triggers.ReleaseKeys))
 end
 
@@ -849,41 +836,37 @@ function Triggers.ControlKeys()
     local currentFigure = Figure.current
     local currentKey = BlzGetTriggerPlayerKey()
     if currentFigure ~= nil then
-        if currentKey == Triggers.leftKey then
-            if not Triggers.keyState[currentKey] then -- проверяем состояние клавиши
+        if currentKey == Keys.leftKey then
+            if not Triggers.keyState[currentKey] then --проверяем состояние клавиши
                 currentFigure:moveSide("left")
-                Triggers.keyState[currentKey] = true -- обновляем состояние клавиши
+                Triggers.keyState[currentKey] = true --обновляем состояние клавиши
             end
         end
-        if currentKey == Triggers.rightKey then
+        if currentKey == Keys.rightKey then
             if not Triggers.keyState[currentKey] then
                 currentFigure:moveSide("right")
                 Triggers.keyState[currentKey] = true
             end
         end
-        if currentKey == Triggers.softDropKey then
+        if currentKey == Keys.softDropKey then
             if not Triggers.keyState[currentKey] then
-                print("soft drop")
                 Triggers.keyState[currentKey] = true
             end
         end
-        if currentKey == Triggers.hardDropKey then
+        if currentKey == Keys.hardDropKey then
             if not Triggers.keyState[currentKey] then
-                print("hard drop")
                 currentFigure:hardDrop()
                 Triggers.keyState[currentKey] = true
             end
         end
-        if currentKey == Triggers.rotateRightKey then
+        if currentKey == Keys.rotateRightKey then
             if not Triggers.keyState[currentKey] then
                 currentFigure:rotate("clockwise")
-                print("rotate clockwise")
                 Triggers.keyState[currentKey] = true
             end
         end
-        if currentKey == Triggers.rotateLeftKey then
+        if currentKey == Keys.rotateLeftKey then
             if not Triggers.keyState[currentKey] then
-                print("rotate counter clockwise")
                 currentFigure:rotate("counter")
                 Triggers.keyState[currentKey] = true
             end
@@ -897,48 +880,71 @@ function Triggers.ReleaseKeys()
 end
 UI = {}
 
-
 function UI.load()
     UI.hideDefault()
     UI.initCustomUI()
-    UI.setMusic()
+    Music.setMusic()
 end
 
 function UI.hideDefault()
     FrameLib.HideDefaultUI()
+    SetTimeOfDay(0.00)
+    SuspendTimeOfDay(true)
 end
 
 function UI.initCustomUI()
     Field.create()
-    FrameLib.ClickBlocker()
+    CustomFrames.init()
 end
 
-function UI.setMusic()
-    StopMusicBJ(false)
-    ClearMapMusicBJ()
-    local path = "Music\\BRD_-_Teleport_Prokg"
+Border = {}
+
+function Border.setBorder(class, thickness, color)
+    local x2 = class.startPoint.x
+    local y1 = class.startPoint.y
+    local y2 = y1 + class.rows * class.cellsize
+    local function drawLine(x1, x2, y1, y2)
+        local world = BlzGetOriginFrame(ORIGIN_FRAME_WORLD_FRAME, 0)
+        local line = FrameLib.CreateBackdropTwoPoints(world, x1, x2, y1, y2, color, "border", 3 )
+        BlzFrameSetVisible(line, true)
+    end
+
+    drawLine(x2 - thickness, x2, y1, y2)
+    drawLine(x2 + class.columns * class.cellsize, x2 + class.columns * class.cellsize + thickness, y1, y2)
+    drawLine(x2 - thickness, x2 + class.columns * class.cellsize + thickness, y1 - thickness, y1)
+    drawLine(x2 - thickness, x2 + class.columns * class.cellsize + thickness, y2, y2 + thickness)
+end
+CustomFrames = {}
+CustomFrames.musicTitle = nil
+
+function CustomFrames.init()
+    FrameLib.ClickBlocker()
+    BlzFrameSetVisible(BlzGetFrameByName("UpperButtonBarFrame",0), true)
+    CustomFrames.createMusicPanel()
+end
+
+function CustomFrames.createMusicPanel()
+    local world = BlzGetOriginFrame(ORIGIN_FRAME_WORLD_FRAME, 0)
+    local panel = FrameLib.CreateBackdropTwoPoints(world, 0, Field.startPoint.x - 0.01, Field.startPoint.y - Field.defThickness, 0.2, "transp", "name", 2)
+    BlzFrameSetVisible(panel, true)
+
+    local text = FrameLib.CreateText(panel, 0.105, Field.startPoint.y + 0.144, 0.2, "Now Playing:  ", 1)
+    BlzFrameSetTextAlignment(text, TEXT_JUSTIFY_BOTTOM, TEXT_JUSTIFY_LEFT)
+    BlzFrameClearAllPoints(text)
+    BlzFrameSetScale(text, 1.4)
+    BlzFrameSetPoint(text, FRAMEPOINT_BOTTOMLEFT, panel, FRAMEPOINT_BOTTOMLEFT, 0, 0)
+    CustomFrames.musicTitle = text
+
+    local sprite = FrameLib.createSprite("dance", 1, 0.4, 0.3, 0.55, panel, 2)
+    BlzFrameClearAllPoints(sprite)
+    BlzFrameSetPoint(sprite, FRAMEPOINT_CENTER, panel, FRAMEPOINT_LEFT, 0.05, -0.05)
+end
+
+function CustomFrames.setMusicTitle(path)
     local filename = path:gsub("Music\\", "")
     local filename = filename:gsub("_", " ")
-    PlayMusic(path)
-    UI.setMusicTitle(filename)
-end
 
-function UI.setMusicTitle(filename)
-    local world = BlzGetOriginFrame(ORIGIN_FRAME_WORLD_FRAME, 0)
-    local text = FrameLib.CreateText(world, 0.105, Field.startPoint.y + 0.144, 0.2, "Playing Now:  "..filename, 5)
-    BlzFrameSetScale(text, 1.5)
-    BlzFrameSetTextAlignment(text, TEXT_JUSTIFY_BOTTOM, TEXT_JUSTIFY_MIDDLE)
-    UI.funnySprite(0.105, Field.startPoint.y + 0.05)
-end
-
-function UI.funnySprite(x, y)
-    local world = BlzGetOriginFrame(ORIGIN_FRAME_WORLD_FRAME, 0)
-    local fr = BlzCreateFrameByType("SPRITE", "SpriteName", world, "", 0)
-    BlzFrameSetAbsPoint(fr, FRAMEPOINT_CENTER, x, y)
-    BlzFrameSetLevel(fr, 6)
-    BlzFrameSetSize(fr, 0.001, 0.001)
-    BlzFrameSetModel(fr, "dance", 1)
-    BlzFrameSetScale(fr, 0.55)
+    BlzFrameSetText(CustomFrames.musicTitle, "Now Playing:  "..filename)
 end
 Game.load()
 --CUSTOM_CODE
