@@ -13,7 +13,6 @@ function FrameLib.HideDefaultUI()
     BlzFrameSetScale(BlzFrameGetChild(BlzGetFrameByName("ConsoleUI", 0), 5), 0.001)
 end
 
-
 function FrameLib.CreateBackdropTwoPoints(parent, xmin, xmax, ymin, ymax, texture, name, lvl)
     local fr = BlzCreateFrameByType("BACKDROP", name, parent, "", 1)
     BlzFrameSetLevel(fr, lvl)
@@ -25,18 +24,6 @@ function FrameLib.CreateBackdropTwoPoints(parent, xmin, xmax, ymin, ymax, textur
 end
 
 function FrameLib.CreateText(parent, centerX, centerY, size, text, lvl)
-    local fr = BlzCreateFrameByType("TEXT", "", parent, "", 0)
-    BlzFrameSetLevel(fr, lvl)
-    BlzFrameSetAbsPoint(fr, FRAMEPOINT_CENTER, centerX, centerY)
-    BlzFrameSetSize(fr, size, size)
-    BlzFrameSetText(fr, text)
-    BlzFrameSetEnable(fr, false)
-    BlzFrameSetScale(fr, 1)
-    BlzFrameSetTextAlignment(fr, TEXT_JUSTIFY_CENTER, TEXT_JUSTIFY_MIDDLE)
-    return fr
-end
-
-function FrameLib.CreateTextTwoPoints(parent, centerX, centerY, size, text, lvl)
     local fr = BlzCreateFrameByType("TEXT", "", parent, "", 0)
     BlzFrameSetLevel(fr, lvl)
     BlzFrameSetAbsPoint(fr, FRAMEPOINT_CENTER, centerX, centerY)
@@ -60,6 +47,5 @@ function FrameLib.createSprite(model, cam, x, y, scale, parent, lvl)
     BlzFrameSetSize(fr, 0.001, 0.001)
     BlzFrameSetModel(fr, model, cam)
     BlzFrameSetScale(fr, scale)
-
     return fr
 end

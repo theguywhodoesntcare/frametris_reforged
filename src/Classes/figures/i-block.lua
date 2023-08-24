@@ -1,7 +1,7 @@
 IShape = {}
 IShape.__index = IShape
 setmetatable(IShape, {__index = Figure})
-IShape.color = "replaceabletextures\\commandbuttons\\btnbox"
+IShape.color = "turquoise"
 IShape.s1 = {x = 4, y = 19}
 IShape.s2 = {x = 5, y = 19}
 IShape.s3 = {x = 6, y = 19}

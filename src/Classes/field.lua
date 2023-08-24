@@ -42,7 +42,7 @@ function Field.findRows()
         if isRowFilled then
             table.insert(rowsToDestroy, r)
             if #rowsToDestroy >= 4 then
-                print("TETRIS!")
+                --print("TETRIS!")
                 break
             end
         end

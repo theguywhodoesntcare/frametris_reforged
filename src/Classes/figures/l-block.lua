@@ -1,7 +1,7 @@
 LShape = {}
 LShape.__index = LShape
 setmetatable(LShape, {__index = Figure})
-LShape.color = "replaceabletextures\\commandbuttons\\btnamulet"
+LShape.color = "orange"
 LShape.s1 = {x = 4, y = 19}
 LShape.s2 = {x = 5, y = 19} --center
 LShape.s3 = {x = 6, y = 19}

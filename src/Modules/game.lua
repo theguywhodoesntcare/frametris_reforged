@@ -1,4 +1,5 @@
 Game = {}
+Game.status = "play"
 
 function Game.start()
     local figure = Figure.createRandom()
@@ -37,11 +38,9 @@ function Game.load()
 end
 
 function Game.gameOver()
-
-    print("you lost")
-
     Figure.next = nil
     Figure.current = nil
-
+    Game.status = "lost"
+    CustomFrames.setLose(true)
 end
 

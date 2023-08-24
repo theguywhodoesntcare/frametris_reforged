@@ -1,10 +1,12 @@
 CustomFrames = {}
 CustomFrames.musicTitle = nil
+CustomFrames.lost = nil
 
 function CustomFrames.init()
     FrameLib.ClickBlocker()
-    BlzFrameSetVisible(BlzGetFrameByName("UpperButtonBarFrame",0), true)
     CustomFrames.createMusicPanel()
+    CustomFrames.createArt()
+    CustomFrames.lostFrame()
 end
 
 function CustomFrames.createMusicPanel()
@@ -29,4 +31,32 @@ function CustomFrames.setMusicTitle(path)
     local filename = filename:gsub("_", " ")
 
     BlzFrameSetText(CustomFrames.musicTitle, "Now Playing:  "..filename)
+    CustomFrames.displayControls()
+end
+
+function CustomFrames.displayControls()
+    local world = BlzGetOriginFrame(ORIGIN_FRAME_WORLD_FRAME, 0)
+    local text = "Controls:|n|n|cffffff00A|r — Move Left, |cffffff00D|r — Move Right|n|n|cffffff00Q|r — Rotate CCW, |cffffff00W|r — Rotate CW|n|n|cffffff00S|r — Soft Drop, |cffffff00SPACE|r — Hard Drop"
+    local textFrame = FrameLib.CreateText(world, 0.11, 0.3, 0.2, text, 2)
+    BlzFrameSetScale(textFrame, 1.25)
+end
+
+function CustomFrames.createArt()
+    local world = BlzGetOriginFrame(ORIGIN_FRAME_WORLD_FRAME, 0)
+    local texture = "ui\\glues\\scorescreen\\scorescreen-orcvictoryexpansion\\scorescreen-orcvictoryexpansion"
+    local fr = FrameLib.CreateBackdropTwoPoints(world, 0.5, 0.8, 0.15, 0.45, texture, "", 2)
+    BlzFrameSetVisible(fr, true)
+end
+
+function CustomFrames.lostFrame()
+    local world = BlzGetOriginFrame(ORIGIN_FRAME_WORLD_FRAME, 0)
+    local text = "|cffff0000You lose!|nPress|r |cffffff00ESC|r |cffff0000to restart|r"
+    local textFrame = FrameLib.CreateText(world, 0.4, 0.3, 0.25, text, 3)
+    BlzFrameSetVisible(textFrame, false)
+    BlzFrameSetScale(textFrame, 2.75)
+    CustomFrames.lost = textFrame
+end
+
+function CustomFrames.setLose(flag)
+    BlzFrameSetVisible(CustomFrames.lost, flag)
 end

@@ -1,7 +1,7 @@
 ZShape = {}
 ZShape.__index = ZShape
 setmetatable(ZShape, {__index = Figure})
-ZShape.color = "replaceabletextures\\commandbuttons\\btndrum"
+ZShape.color = "red"
 ZShape.s1 = {x = 4, y = 20}
 ZShape.s2 = {x = 5, y = 20}
 ZShape.s3 = {x = 5, y = 19} --center

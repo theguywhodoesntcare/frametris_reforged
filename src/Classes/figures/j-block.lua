@@ -1,7 +1,7 @@
 JShape = {}
 JShape.__index = JShape
 setmetatable(JShape, {__index = Figure})
-JShape.color = "replaceabletextures\\commandbuttons\\btnacorn"
+JShape.color = "blue"
 JShape.s1 = {x = 4, y = 20}
 JShape.s2 = {x = 4, y = 19}
 JShape.s3 = {x = 5, y = 19} --center

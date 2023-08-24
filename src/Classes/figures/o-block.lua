@@ -1,7 +1,7 @@
 OShape = {}
 OShape.__index = OShape
 setmetatable(OShape, {__index = Figure})
-OShape.color = "replaceabletextures\\commandbuttons\\btntemp"
+OShape.color = "yellow"
 OShape.s1 = {x = 5, y = 20}
 OShape.s2 = {x = 6, y = 20}
 OShape.s3 = {x = 5, y = 19}

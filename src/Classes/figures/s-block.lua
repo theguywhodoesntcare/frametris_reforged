@@ -1,7 +1,7 @@
 SShape = {}
 SShape.__index = SShape
 setmetatable(SShape, {__index = Figure})
-SShape.color = "replaceabletextures\\commandbuttons\\btngem"
+SShape.color = "green"
 SShape.s1 = {x = 4, y = 19}
 SShape.s2 = {x = 5, y = 19} --center
 SShape.s3 = {x = 5, y = 20}

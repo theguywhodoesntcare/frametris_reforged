@@ -17,7 +17,6 @@ function FrameLib.HideDefaultUI()
     BlzFrameSetScale(BlzFrameGetChild(BlzGetFrameByName("ConsoleUI", 0), 5), 0.001)
 end
 
-
 function FrameLib.CreateBackdropTwoPoints(parent, xmin, xmax, ymin, ymax, texture, name, lvl)
     local fr = BlzCreateFrameByType("BACKDROP", name, parent, "", 1)
     BlzFrameSetLevel(fr, lvl)
@@ -29,18 +28,6 @@ function FrameLib.CreateBackdropTwoPoints(parent, xmin, xmax, ymin, ymax, textur
 end
 
 function FrameLib.CreateText(parent, centerX, centerY, size, text, lvl)
-    local fr = BlzCreateFrameByType("TEXT", "", parent, "", 0)
-    BlzFrameSetLevel(fr, lvl)
-    BlzFrameSetAbsPoint(fr, FRAMEPOINT_CENTER, centerX, centerY)
-    BlzFrameSetSize(fr, size, size)
-    BlzFrameSetText(fr, text)
-    BlzFrameSetEnable(fr, false)
-    BlzFrameSetScale(fr, 1)
-    BlzFrameSetTextAlignment(fr, TEXT_JUSTIFY_CENTER, TEXT_JUSTIFY_MIDDLE)
-    return fr
-end
-
-function FrameLib.CreateTextTwoPoints(parent, centerX, centerY, size, text, lvl)
     local fr = BlzCreateFrameByType("TEXT", "", parent, "", 0)
     BlzFrameSetLevel(fr, lvl)
     BlzFrameSetAbsPoint(fr, FRAMEPOINT_CENTER, centerX, centerY)
@@ -64,9 +51,9 @@ function FrameLib.createSprite(model, cam, x, y, scale, parent, lvl)
     BlzFrameSetSize(fr, 0.001, 0.001)
     BlzFrameSetModel(fr, model, cam)
     BlzFrameSetScale(fr, scale)
-
     return fr
 end
+
 Cell = {} --экземпляры клеток не нужны, просто static обёртка над frame api
 
 function Cell.get(x, y)
@@ -138,7 +125,7 @@ function Field.findRows()
         if isRowFilled then
             table.insert(rowsToDestroy, r)
             if #rowsToDestroy >= 4 then
-                print("TETRIS!")
+                --print("TETRIS!")
                 break
             end
         end
@@ -546,7 +533,7 @@ end
 IShape = {}
 IShape.__index = IShape
 setmetatable(IShape, {__index = Figure})
-IShape.color = "replaceabletextures\\commandbuttons\\btnbox"
+IShape.color = "turquoise"
 IShape.s1 = {x = 4, y = 19}
 IShape.s2 = {x = 5, y = 19}
 IShape.s3 = {x = 6, y = 19}
@@ -577,7 +564,7 @@ end
 JShape = {}
 JShape.__index = JShape
 setmetatable(JShape, {__index = Figure})
-JShape.color = "replaceabletextures\\commandbuttons\\btnacorn"
+JShape.color = "blue"
 JShape.s1 = {x = 4, y = 20}
 JShape.s2 = {x = 4, y = 19}
 JShape.s3 = {x = 5, y = 19} --center
@@ -608,7 +595,7 @@ end
 LShape = {}
 LShape.__index = LShape
 setmetatable(LShape, {__index = Figure})
-LShape.color = "replaceabletextures\\commandbuttons\\btnamulet"
+LShape.color = "orange"
 LShape.s1 = {x = 4, y = 19}
 LShape.s2 = {x = 5, y = 19} --center
 LShape.s3 = {x = 6, y = 19}
@@ -638,7 +625,7 @@ end
 OShape = {}
 OShape.__index = OShape
 setmetatable(OShape, {__index = Figure})
-OShape.color = "replaceabletextures\\commandbuttons\\btntemp"
+OShape.color = "yellow"
 OShape.s1 = {x = 5, y = 20}
 OShape.s2 = {x = 6, y = 20}
 OShape.s3 = {x = 5, y = 19}
@@ -666,7 +653,7 @@ end
 SShape = {}
 SShape.__index = SShape
 setmetatable(SShape, {__index = Figure})
-SShape.color = "replaceabletextures\\commandbuttons\\btngem"
+SShape.color = "green"
 SShape.s1 = {x = 4, y = 19}
 SShape.s2 = {x = 5, y = 19} --center
 SShape.s3 = {x = 5, y = 20}
@@ -695,7 +682,7 @@ end
 TShape = {}
 TShape.__index = TShape
 setmetatable(TShape, {__index = Figure})
-TShape.color = "replaceabletextures\\commandbuttons\\btnbandit"
+TShape.color = "violet"
 TShape.s1 = {x = 4, y = 19}
 TShape.s2 = {x = 5, y = 19} --center
 TShape.s3 = {x = 6, y = 19}
@@ -724,7 +711,7 @@ end
 ZShape = {}
 ZShape.__index = ZShape
 setmetatable(ZShape, {__index = Figure})
-ZShape.color = "replaceabletextures\\commandbuttons\\btndrum"
+ZShape.color = "red"
 ZShape.s1 = {x = 4, y = 20}
 ZShape.s2 = {x = 5, y = 20}
 ZShape.s3 = {x = 5, y = 19} --center
@@ -751,6 +738,7 @@ function ZShape:rotate(direction)
     Figure.rotate(self, newSegments, direction)
 end
 Game = {}
+Game.status = "play"
 
 function Game.start()
     local figure = Figure.createRandom()
@@ -789,12 +777,10 @@ function Game.load()
 end
 
 function Game.gameOver()
-
-    print("you lost")
-
     Figure.next = nil
     Figure.current = nil
-
+    Game.status = "lost"
+    CustomFrames.setLose(true)
 end
 
 
@@ -805,11 +791,12 @@ Keys.softDropKey = OSKEY_S
 Keys.hardDropKey = OSKEY_SPACE
 Keys.rotateRightKey = OSKEY_W
 Keys.rotateLeftKey = OSKEY_Q
+Keys.restartKey = OSKEY_ESCAPE
 Music = {}
 
 function Music.setMusic()
-    StopMusicBJ(false)
-    ClearMapMusicBJ()
+    StopMusic(false)
+    ClearMapMusic()
     local path = "Music\\BRD_-_Teleport_Prokg"
     PlayMusic(path)
     CustomFrames.setMusicTitle(path)
@@ -872,6 +859,9 @@ function Triggers.ControlKeys()
             end
         end
     end
+    if currentKey == Keys.restartKey and Game.status == "lost" then
+        RestartGame()
+    end
 end
 
 function Triggers.ReleaseKeys()
@@ -895,8 +885,20 @@ end
 function UI.initCustomUI()
     Field.create()
     CustomFrames.init()
+    UI.editMenu()
 end
 
+function UI.editMenu()
+    BlzFrameSetVisible(BlzGetFrameByName("UpperButtonBarFrame",0), true)
+    BlzFrameSetVisible(BlzGetFrameByName("UpperButtonBarAlliesButton",0), false)
+    BlzFrameSetVisible(BlzGetFrameByName("UpperButtonBarChatButton",0), false)
+    BlzFrameSetVisible(BlzGetFrameByName("UpperButtonBarQuestsButton",0), false)
+
+    local tooltip = BlzGetOriginFrame(ORIGIN_FRAME_UBERTOOLTIP, 0)
+    BlzFrameClearAllPoints(tooltip)
+    BlzFrameSetScale(tooltip, 0.001)
+    BlzFrameSetAbsPoint(tooltip, FRAMEPOINT_BOTTOMRIGHT, 0.0, 0.0)
+end
 Border = {}
 
 function Border.setBorder(class, thickness, color)
@@ -916,11 +918,13 @@ function Border.setBorder(class, thickness, color)
 end
 CustomFrames = {}
 CustomFrames.musicTitle = nil
+CustomFrames.lost = nil
 
 function CustomFrames.init()
     FrameLib.ClickBlocker()
-    BlzFrameSetVisible(BlzGetFrameByName("UpperButtonBarFrame",0), true)
     CustomFrames.createMusicPanel()
+    CustomFrames.createArt()
+    CustomFrames.lostFrame()
 end
 
 function CustomFrames.createMusicPanel()
@@ -945,14 +949,43 @@ function CustomFrames.setMusicTitle(path)
     local filename = filename:gsub("_", " ")
 
     BlzFrameSetText(CustomFrames.musicTitle, "Now Playing:  "..filename)
+    CustomFrames.displayControls()
+end
+
+function CustomFrames.displayControls()
+    local world = BlzGetOriginFrame(ORIGIN_FRAME_WORLD_FRAME, 0)
+    local text = "Controls:|n|n|cffffff00A|r — Move Left, |cffffff00D|r — Move Right|n|n|cffffff00Q|r — Rotate CCW, |cffffff00W|r — Rotate CW|n|n|cffffff00S|r — Soft Drop, |cffffff00SPACE|r — Hard Drop"
+    local textFrame = FrameLib.CreateText(world, 0.11, 0.3, 0.2, text, 2)
+    BlzFrameSetScale(textFrame, 1.25)
+end
+
+function CustomFrames.createArt()
+    local world = BlzGetOriginFrame(ORIGIN_FRAME_WORLD_FRAME, 0)
+    local texture = "ui\\glues\\scorescreen\\scorescreen-orcvictoryexpansion\\scorescreen-orcvictoryexpansion"
+    local fr = FrameLib.CreateBackdropTwoPoints(world, 0.5, 0.8, 0.15, 0.45, texture, "", 2)
+    BlzFrameSetVisible(fr, true)
+end
+
+function CustomFrames.lostFrame()
+    local world = BlzGetOriginFrame(ORIGIN_FRAME_WORLD_FRAME, 0)
+    local text = "|cffff0000You lose!|nPress|r |cffffff00ESC|r |cffff0000to restart|r"
+    local textFrame = FrameLib.CreateText(world, 0.4, 0.3, 0.25, text, 3)
+    BlzFrameSetVisible(textFrame, false)
+    BlzFrameSetScale(textFrame, 2.75)
+    CustomFrames.lost = textFrame
+end
+
+function CustomFrames.setLose(flag)
+    BlzFrameSetVisible(CustomFrames.lost, flag)
 end
 Game.load()
 --CUSTOM_CODE
 function InitCustomPlayerSlots()
 SetPlayerStartLocation(Player(0), 0)
+ForcePlayerStartLocation(Player(0), 0)
 SetPlayerColor(Player(0), ConvertPlayerColor(0))
 SetPlayerRacePreference(Player(0), RACE_PREF_HUMAN)
-SetPlayerRaceSelectable(Player(0), true)
+SetPlayerRaceSelectable(Player(0), false)
 SetPlayerController(Player(0), MAP_CONTROL_USER)
 end
 
@@ -977,9 +1010,8 @@ SetMapDescription("TRIGSTR_003")
 SetPlayers(1)
 SetTeams(1)
 SetGamePlacement(MAP_PLACEMENT_USE_MAP_SETTINGS)
-DefineStartLocation(0, 960.0, 1792.0)
+DefineStartLocation(0, 192.0, -3072.0)
 InitCustomPlayerSlots()
-SetPlayerSlotAvailable(Player(0), MAP_CONTROL_USER)
-InitGenericPlayerSlots()
+InitCustomTeams()
 end
 
