@@ -27,11 +27,34 @@ function FrameLib.CreateBackdropTwoPoints(parent, xmin, xmax, ymin, ymax, textur
     return fr
 end
 
+function FrameLib.CreateBackdrop(parent, x, y, size, texture, name, lvl)
+    local fr = BlzCreateFrameByType("BACKDROP", name, parent, "", 1)
+    BlzFrameSetLevel(fr, lvl)
+    BlzFrameSetAbsPoint(fr, FRAMEPOINT_CENTER, x, y)
+    BlzFrameSetSize(fr, size, size)
+    BlzFrameSetTexture(fr, texture, 0, true)
+    BlzFrameSetVisible(fr, false)
+    return fr
+end
+
+
 function FrameLib.CreateText(parent, centerX, centerY, size, text, lvl)
     local fr = BlzCreateFrameByType("TEXT", "", parent, "", 0)
     BlzFrameSetLevel(fr, lvl)
     BlzFrameSetAbsPoint(fr, FRAMEPOINT_CENTER, centerX, centerY)
     BlzFrameSetSize(fr, size, size)
+    BlzFrameSetText(fr, text)
+    BlzFrameSetEnable(fr, false)
+    BlzFrameSetScale(fr, 1)
+    BlzFrameSetTextAlignment(fr, TEXT_JUSTIFY_CENTER, TEXT_JUSTIFY_MIDDLE)
+    return fr
+end
+
+function FrameLib.CreateTextTwoPoints(parent, x1, y1, x2, y2, text, lvl)
+    local fr = BlzCreateFrameByType("TEXT", "", parent, "", 0)
+    BlzFrameSetLevel(fr, lvl)
+    BlzFrameSetAbsPoint(fr, FRAMEPOINT_TOPLEFT, x1, y1)
+    BlzFrameSetAbsPoint(fr, FRAMEPOINT_BOTTOMRIGHT, x2, y2)
     BlzFrameSetText(fr, text)
     BlzFrameSetEnable(fr, false)
     BlzFrameSetScale(fr, 1)
@@ -150,6 +173,7 @@ function Field.destroyRows(rows)
         i = i + 1
         if i > x then
             PauseTimer(t)
+            Counter.rowsReward(#rows)
             Field.shake()
             DestroyTimer(t)
         end
@@ -749,6 +773,7 @@ function Game.start()
 end
 
 function Game.checkField()
+    Counter.pieceReward()
     if not Field.findRows() then
         Game.launchFigure()
     end
@@ -768,10 +793,12 @@ end
 function Game.load()
     do
         function MarkGameStarted()
+            math.randomseed(os.time())
+            Music.ambientOff()
             UI.load()
+            Music.setMusic()
             Game.start()
             Triggers.initKeyTrigger()
-            math.randomseed(os.time())
         end
     end
 end
@@ -800,6 +827,36 @@ function Music.setMusic()
     local path = "Music\\BRD_-_Teleport_Prokg"
     PlayMusic(path)
     CustomFrames.setMusicTitle(path)
+end
+ function Music.ambientOff()
+     VolumeGroupSetVolume( SOUND_VOLUMEGROUP_AMBIENTSOUNDS, 0.00 )
+ end
+Counter = {}
+Counter.score = 0
+Counter.rowsRewards = {}
+Counter.rowsRewards[1] = 50
+Counter.rowsRewards[2] = 150
+Counter.rowsRewards[3] = 350
+Counter.rowsRewards[4] = 700
+Counter.pieceRewardConst = 5
+
+function Counter.pieceReward()
+    local reward = Counter.pieceRewardConst
+    Counter.update(reward)
+end
+
+function Counter.rowsReward(numb)
+    local reward = Counter.rowsRewards[numb]
+    Counter.update(reward)
+end
+
+function Counter.update(additive)
+    if Game.status == "play" then
+        Counter.score = Counter.score + additive
+        local score = string.format("%06d", Counter.score)
+        local str = "|cffffff00SCORE|r:  "..score
+        BlzFrameSetText(CustomFrames.score, str)
+    end
 end
 Triggers = {}
 Triggers.keyTrigger = CreateTrigger()
@@ -873,7 +930,6 @@ UI = {}
 function UI.load()
     UI.hideDefault()
     UI.initCustomUI()
-    Music.setMusic()
 end
 
 function UI.hideDefault()
@@ -919,12 +975,15 @@ end
 CustomFrames = {}
 CustomFrames.musicTitle = nil
 CustomFrames.lost = nil
+CustomFrames.stats = nil
+CustomFrames.score = nil
 
 function CustomFrames.init()
     FrameLib.ClickBlocker()
     CustomFrames.createMusicPanel()
     CustomFrames.createArt()
     CustomFrames.lostFrame()
+    CustomFrames.createStatsFrame()
 end
 
 function CustomFrames.createMusicPanel()
@@ -968,15 +1027,29 @@ end
 
 function CustomFrames.lostFrame()
     local world = BlzGetOriginFrame(ORIGIN_FRAME_WORLD_FRAME, 0)
+    local background = FrameLib.CreateBackdrop(world, 0.4, 0.3, 0.2, "textures\\black32", "", 4)
     local text = "|cffff0000You lose!|nPress|r |cffffff00ESC|r |cffff0000to restart|r"
-    local textFrame = FrameLib.CreateText(world, 0.4, 0.3, 0.25, text, 3)
-    BlzFrameSetVisible(textFrame, false)
+    local textFrame = FrameLib.CreateText(background, 0.4, 0.3, 0.25, text, 1)
+
+    BlzFrameSetVisible(textFrame, true)
     BlzFrameSetScale(textFrame, 2.75)
-    CustomFrames.lost = textFrame
+    CustomFrames.lost = background
 end
 
 function CustomFrames.setLose(flag)
     BlzFrameSetVisible(CustomFrames.lost, flag)
+end
+
+function CustomFrames.createStatsFrame()
+    local world = BlzGetOriginFrame(ORIGIN_FRAME_WORLD_FRAME, 0)
+    local x2 = Field.startPoint.x + Field.columns * Field.cellsize + Field.defThickness
+    local x1 = Field.startPoint.x - Field.defThickness
+    local y1 = Field.startPoint.y + Field.rows * Field.cellsize + Field.defThickness
+    local y2 = y1 + 0.02
+    local text = FrameLib.CreateTextTwoPoints(world, x1, y2, x2, y1, "|cffffff00SCORE|r:  000000", 5)
+    BlzFrameSetTextAlignment(text, TEXT_JUSTIFY_MIDDLE, TEXT_JUSTIFY_RIGHT)
+    BlzFrameSetScale(text, 1.5)
+    CustomFrames.score = text
 end
 Game.load()
 --CUSTOM_CODE

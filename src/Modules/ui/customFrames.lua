@@ -1,12 +1,15 @@
 CustomFrames = {}
 CustomFrames.musicTitle = nil
 CustomFrames.lost = nil
+CustomFrames.stats = nil
+CustomFrames.score = nil
 
 function CustomFrames.init()
     FrameLib.ClickBlocker()
     CustomFrames.createMusicPanel()
     CustomFrames.createArt()
     CustomFrames.lostFrame()
+    CustomFrames.createStatsFrame()
 end
 
 function CustomFrames.createMusicPanel()
@@ -50,13 +53,27 @@ end
 
 function CustomFrames.lostFrame()
     local world = BlzGetOriginFrame(ORIGIN_FRAME_WORLD_FRAME, 0)
+    local background = FrameLib.CreateBackdrop(world, 0.4, 0.3, 0.2, "textures\\black32", "", 4)
     local text = "|cffff0000You lose!|nPress|r |cffffff00ESC|r |cffff0000to restart|r"
-    local textFrame = FrameLib.CreateText(world, 0.4, 0.3, 0.25, text, 3)
-    BlzFrameSetVisible(textFrame, false)
+    local textFrame = FrameLib.CreateText(background, 0.4, 0.3, 0.25, text, 1)
+
+    BlzFrameSetVisible(textFrame, true)
     BlzFrameSetScale(textFrame, 2.75)
-    CustomFrames.lost = textFrame
+    CustomFrames.lost = background
 end
 
 function CustomFrames.setLose(flag)
     BlzFrameSetVisible(CustomFrames.lost, flag)
+end
+
+function CustomFrames.createStatsFrame()
+    local world = BlzGetOriginFrame(ORIGIN_FRAME_WORLD_FRAME, 0)
+    local x2 = Field.startPoint.x + Field.columns * Field.cellsize + Field.defThickness
+    local x1 = Field.startPoint.x - Field.defThickness
+    local y1 = Field.startPoint.y + Field.rows * Field.cellsize + Field.defThickness
+    local y2 = y1 + 0.02
+    local text = FrameLib.CreateTextTwoPoints(world, x1, y2, x2, y1, "|cffffff00SCORE|r:  000000", 5)
+    BlzFrameSetTextAlignment(text, TEXT_JUSTIFY_MIDDLE, TEXT_JUSTIFY_RIGHT)
+    BlzFrameSetScale(text, 1.5)
+    CustomFrames.score = text
 end

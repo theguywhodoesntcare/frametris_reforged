@@ -3,7 +3,6 @@ UI = {}
 function UI.load()
     UI.hideDefault()
     UI.initCustomUI()
-    Music.setMusic()
 end
 
 function UI.hideDefault()

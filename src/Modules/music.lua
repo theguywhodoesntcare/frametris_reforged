@@ -7,3 +7,6 @@ function Music.setMusic()
     PlayMusic(path)
     CustomFrames.setMusicTitle(path)
 end
+ function Music.ambientOff()
+     VolumeGroupSetVolume( SOUND_VOLUMEGROUP_AMBIENTSOUNDS, 0.00 )
+ end

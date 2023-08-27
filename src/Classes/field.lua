@@ -67,6 +67,7 @@ function Field.destroyRows(rows)
         i = i + 1
         if i > x then
             PauseTimer(t)
+            Counter.rowsReward(#rows)
             Field.shake()
             DestroyTimer(t)
         end

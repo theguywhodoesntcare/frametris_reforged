@@ -23,11 +23,34 @@ function FrameLib.CreateBackdropTwoPoints(parent, xmin, xmax, ymin, ymax, textur
     return fr
 end
 
+function FrameLib.CreateBackdrop(parent, x, y, size, texture, name, lvl)
+    local fr = BlzCreateFrameByType("BACKDROP", name, parent, "", 1)
+    BlzFrameSetLevel(fr, lvl)
+    BlzFrameSetAbsPoint(fr, FRAMEPOINT_CENTER, x, y)
+    BlzFrameSetSize(fr, size, size)
+    BlzFrameSetTexture(fr, texture, 0, true)
+    BlzFrameSetVisible(fr, false)
+    return fr
+end
+
+
 function FrameLib.CreateText(parent, centerX, centerY, size, text, lvl)
     local fr = BlzCreateFrameByType("TEXT", "", parent, "", 0)
     BlzFrameSetLevel(fr, lvl)
     BlzFrameSetAbsPoint(fr, FRAMEPOINT_CENTER, centerX, centerY)
     BlzFrameSetSize(fr, size, size)
+    BlzFrameSetText(fr, text)
+    BlzFrameSetEnable(fr, false)
+    BlzFrameSetScale(fr, 1)
+    BlzFrameSetTextAlignment(fr, TEXT_JUSTIFY_CENTER, TEXT_JUSTIFY_MIDDLE)
+    return fr
+end
+
+function FrameLib.CreateTextTwoPoints(parent, x1, y1, x2, y2, text, lvl)
+    local fr = BlzCreateFrameByType("TEXT", "", parent, "", 0)
+    BlzFrameSetLevel(fr, lvl)
+    BlzFrameSetAbsPoint(fr, FRAMEPOINT_TOPLEFT, x1, y1)
+    BlzFrameSetAbsPoint(fr, FRAMEPOINT_BOTTOMRIGHT, x2, y2)
     BlzFrameSetText(fr, text)
     BlzFrameSetEnable(fr, false)
     BlzFrameSetScale(fr, 1)

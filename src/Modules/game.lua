@@ -10,6 +10,7 @@ function Game.start()
 end
 
 function Game.checkField()
+    Counter.pieceReward()
     if not Field.findRows() then
         Game.launchFigure()
     end
@@ -29,10 +30,12 @@ end
 function Game.load()
     do
         function MarkGameStarted()
+            math.randomseed(os.time())
+            Music.ambientOff()
             UI.load()
+            Music.setMusic()
             Game.start()
             Triggers.initKeyTrigger()
-            math.randomseed(os.time())
         end
     end
 end
