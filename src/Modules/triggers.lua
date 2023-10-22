@@ -57,7 +57,7 @@ function Triggers.ControlKeys()
         end
     end
     if currentKey == Keys.restartKey and Game.status == "lost" then
-        RestartGame()
+        Game.restartGame()
     end
 end
 

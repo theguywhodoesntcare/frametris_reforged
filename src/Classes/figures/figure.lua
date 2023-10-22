@@ -9,6 +9,7 @@ function Figure:new()
     setmetatable(figure, Figure)
     figure.t = CreateTimer()
     figure.softDropTimer = CreateTimer()
+    figure.hardDropTimer = CreateTimer()
     figure.allowedToHardDrop = false
     return figure
 end
@@ -21,7 +22,7 @@ function Figure:draw()
             Cell.setColor(segments[i].x, segments[i].y, self.color)
         else
             drawable = false
-            break
+            --break --нарисует возможные сегменты
         end
     end
     if drawable then
@@ -112,7 +113,7 @@ function Figure:hardDrop()
         DestroyTimer(self.t)
         DestroyTimer(self.softDropTimer)
         local isStopped = false
-        local t = CreateTimer()
+        local t = self.hardDropTimer
         TimerStart(t, 0.01, true, function()
             if not self:moveDown() then
                 if not isStopped then

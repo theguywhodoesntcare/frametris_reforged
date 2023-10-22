@@ -1,0 +1,5 @@
+[CustomSkin]
+GoldIcon=transp.dds
+LumberIcon=transp.dds
+SupplyIcon=transp.dds
+

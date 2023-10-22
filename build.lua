@@ -3,6 +3,8 @@ require 'build' {
         'src\\lib',
         'src\\Classes',
         'src\\Classes\\figures',
+        --'src\\Modules\\keys.lua',
+        'src\\Modules\\ui',
         'src\\Modules',
         'src\\init.lua'
     },

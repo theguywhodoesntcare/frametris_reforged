@@ -19,6 +19,7 @@ end
 function Game.launchFigure()
     DestroyTimer(Figure.current.t)
     DestroyTimer(Figure.current.softDropTimer)
+    DestroyTimer(Figure.current.hardDropTimer)
     Figure.current = nil
     Figure.next:draw()
     Figure.next = Figure.createRandom()
@@ -45,5 +46,17 @@ function Game.gameOver()
     Figure.current = nil
     Game.status = "lost"
     CustomFrames.setLose(true)
+end
+
+function Game.restartGame()
+    Counter.resetScore()
+    CustomFrames.setLose(false)
+    Field.clear()
+    Preview.clear()
+
+    Game.status = "play"
+    Counter.resetScore()
+
+    Game.start()
 end
 

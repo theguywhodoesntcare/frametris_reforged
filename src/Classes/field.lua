@@ -106,4 +106,12 @@ function Field.shake()
     Game.launchFigure()
 end
 
+function Field.clear()
+    for r = 1, Field.rows do
+        for c = 1, Field.columns do
+            Cell.setVisible(c, r, false)
+        end
+    end
+end
+
 

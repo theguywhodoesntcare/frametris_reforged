@@ -3,6 +3,7 @@ CustomFrames.musicTitle = nil
 CustomFrames.lost = nil
 CustomFrames.stats = nil
 CustomFrames.score = nil
+CustomFrames.defScoreString = "|cffffff00HIGH SCORE|r:  000000     |cffffff00SCORE|r:  000000"
 
 function CustomFrames.init()
     FrameLib.ClickBlocker()
@@ -39,9 +40,9 @@ end
 
 function CustomFrames.displayControls()
     local world = BlzGetOriginFrame(ORIGIN_FRAME_WORLD_FRAME, 0)
-    local text = "Controls:|n|n|cffffff00A|r — Move Left, |cffffff00D|r — Move Right|n|n|cffffff00Q|r — Rotate CCW, |cffffff00W|r — Rotate CW|n|n|cffffff00S|r — Soft Drop, |cffffff00SPACE|r — Hard Drop"
+    local text = "Controls:|n|n|cffffff00A|r — Move Left, |cffffff00D|r — Move Right|n|n|cffffff00Q|r — Rotate CCW, |cffffff00W|r — Rotate CW|n|n|cffffff00S (hold)|r — Soft Drop, |cffffff00SPACE|r — Hard Drop"
     local textFrame = FrameLib.CreateText(world, 0.11, 0.3, 0.2, text, 2)
-    BlzFrameSetScale(textFrame, 1.25)
+    BlzFrameSetScale(textFrame, 1.20)
 end
 
 function CustomFrames.createArt()
@@ -53,7 +54,7 @@ end
 
 function CustomFrames.lostFrame()
     local world = BlzGetOriginFrame(ORIGIN_FRAME_WORLD_FRAME, 0)
-    local background = FrameLib.CreateBackdrop(world, 0.4, 0.3, 0.2, "textures\\black32", "", 4)
+    local background = FrameLib.CreateBackdrop(world, 0.4, 0.3, 0.25, "textures\\black32", "", 4)
     local text = "|cffff0000You lose!|nPress|r |cffffff00ESC|r |cffff0000to restart|r"
     local textFrame = FrameLib.CreateText(background, 0.4, 0.3, 0.25, text, 1)
 
@@ -71,9 +72,9 @@ function CustomFrames.createStatsFrame()
     local x2 = Field.startPoint.x + Field.columns * Field.cellsize + Field.defThickness
     local x1 = Field.startPoint.x - Field.defThickness
     local y1 = Field.startPoint.y + Field.rows * Field.cellsize + Field.defThickness
-    local y2 = y1 + 0.02
-    local text = FrameLib.CreateTextTwoPoints(world, x1, y2, x2, y1, "|cffffff00SCORE|r:  000000", 5)
+    local y2 = y1 + 0.0154
+    local text = FrameLib.CreateTextTwoPoints(world, x1, y2, x2, y1, CustomFrames.defScoreString, 5)
     BlzFrameSetTextAlignment(text, TEXT_JUSTIFY_MIDDLE, TEXT_JUSTIFY_RIGHT)
-    BlzFrameSetScale(text, 1.5)
+    BlzFrameSetScale(text, 1.15)
     CustomFrames.score = text
 end
