@@ -199,7 +199,7 @@ function Figure:moveSide(direction)
 end
 
 function Figure:preview()
-    Preview.paint(self)
+    Preview.draw(self)
 end
 
 function Figure.createRandom()
@@ -208,4 +208,3 @@ function Figure.createRandom()
     local figure = shape:new()
     return figure
 end
-

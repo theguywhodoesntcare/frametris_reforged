@@ -1,5 +1,6 @@
 Field = {}
 Field.cells = {}
+Field.cellsColors = {}
 Field.rows = 20
 Field.columns = 10
 Field.cellsize = 0.025
@@ -15,14 +16,15 @@ function Field.create()
     local defColor = "replaceabletextures\\commandbuttons\\btnakama"
     local world = BlzGetOriginFrame(ORIGIN_FRAME_WORLD_FRAME, 0)
     for r = 1, rows do
+        table.insert(Field.cells, {})
         for c = 1, columns do
             local xmin = startX + cellsize*(c-1)
             local xmax = startX + cellsize+cellsize*(c-1)
             local ymin = startY + cellsize*(r-1)
             local ymax = startY + cellsize+cellsize*(r-1)
-            local name = c.."_"..r
-            local cell = FrameLib.CreateBackdropTwoPoints(world, xmin, xmax, ymin, ymax, defColor, name, 2 )
-            Field.cells[cell] = defColor
+            local cell = FrameLib.CreateBackdropTwoPoints(world, xmin, xmax, ymin, ymax, defColor, "", 2 )
+            Field.cellsColors[cell] = defColor
+            table.insert(Field.cells[r], cell)
         end
     end
     Border.setBorder(Field, Field.defThickness, "textures\\white")
