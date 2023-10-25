@@ -1,5 +1,9 @@
 FrameLib = {}
 
+function FrameLib.world()
+    return BlzGetOriginFrame(ORIGIN_FRAME_WORLD_FRAME, 0)
+end
+
 function FrameLib.HideDefaultUI()
     local gameui = BlzGetOriginFrame(ORIGIN_FRAME_GAME_UI, 0)
     BlzFrameSetVisible(BlzFrameGetChild(gameui, 1), false)

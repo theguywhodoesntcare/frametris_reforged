@@ -19,7 +19,6 @@ end
 
 function Preview.build(cellsize, startX, startY, rows, columns, lvl, field)
     local defColor = "replaceabletextures\\commandbuttons\\btnakama"
-    local world = BlzGetOriginFrame(ORIGIN_FRAME_WORLD_FRAME, 0)
     for r = 1, rows do
         table.insert(field, {})
         for c = 1, columns do
@@ -27,7 +26,7 @@ function Preview.build(cellsize, startX, startY, rows, columns, lvl, field)
             local xmax = startX + cellsize+cellsize*(c-1)
             local ymin = startY + cellsize*(r-1)
             local ymax = startY + cellsize+cellsize*(r-1)
-            local cell = FrameLib.CreateBackdropTwoPoints(world, xmin, xmax, ymin, ymax, defColor, "", lvl )
+            local cell = FrameLib.CreateBackdropTwoPoints(FrameLib.world(), xmin, xmax, ymin, ymax, defColor, "", lvl )
             table.insert(field[r], cell)
             table.insert(Preview.allCells, cell)
         end
