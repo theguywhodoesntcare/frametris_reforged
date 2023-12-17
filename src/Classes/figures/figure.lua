@@ -42,8 +42,7 @@ function Figure:redraw(newSegments)
 
     for i = 1, #newSegments do
         local s = newSegments[i]
-        local x = s.x
-        local y = s.y
+        local x, y = s.x, s.y
         Cell.setColor(x, y, self.color)
         oldSegments[i].x, oldSegments[i].y = x, y
     end
@@ -67,8 +66,7 @@ function Figure:rotate(rotatedSegments, direction)
 
     for i = 1, #newSegments do
         local segment = newSegments[i]
-        local x = segment.x
-        local y = segment.y
+        local x, y = segment.x, segment.y
         if (x < 1 or x > Field.columns or y < 1 or (Cell.isFilled(x, y) and not isOldSegment(x, y, oldSegments))) then
             canRotate = false
             break
@@ -98,6 +96,9 @@ function Figure:startTimer()
             else
                 PauseTimer(t)
                 PauseTimer(softDropTimer)
+                ---should block moving and rotating the piece here
+                Triggers.enableControl(false)
+                --
                 Game.checkField()
                 DestroyTimer(t)
             end
@@ -110,6 +111,7 @@ end
 function Figure:hardDrop()
     if self.allowedToHardDrop then
         self.allowedToHardDrop = false
+        Triggers.enableControl(false)
         DestroyTimer(self.t)
         DestroyTimer(self.softDropTimer)
         local isStopped = false

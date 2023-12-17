@@ -25,6 +25,7 @@ function Game.launchFigure()
     Figure.next = Figure.createRandom()
     Figure.next:preview()
     Figure.current:startTimer()
+    Triggers.enableControl(true)
     return
 end
 
@@ -35,6 +36,7 @@ function Game.load()
             Music.ambientOff()
             UI.load()
             Music.setMusic()
+
             Game.start()
             Triggers.initKeyTrigger()
         end
@@ -46,6 +48,11 @@ function Game.gameOver()
     Figure.current = nil
     Game.status = "lost"
     CustomFrames.setLose(true)
+    Triggers.enableControl(true)
+end
+
+function Game.tetris()
+    FrameLib.flashEffect()
 end
 
 function Game.restartGame()
@@ -53,7 +60,6 @@ function Game.restartGame()
     CustomFrames.setLose(false)
     Field.clear()
     Preview.clear()
-
     Game.status = "play"
     Counter.resetScore()
 

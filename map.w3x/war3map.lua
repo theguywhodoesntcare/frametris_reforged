@@ -81,6 +81,37 @@ function FrameLib.createSprite(model, cam, x, y, scale, parent, lvl)
     return fr
 end
 
+function FrameLib.flashEffect()
+    DisplayCineFilter(false)
+
+    local colorDuration = 0.25
+    local t1, t2, t3, t4 = CreateTimer(), CreateTimer(), CreateTimer(), CreateTimer()
+    local mask = "ReplaceableTextures\\CameraMasks\\White_mask"
+
+    CinematicFilterGenericBJ( colorDuration, BLEND_MODE_BLEND, mask, 0.00, 0.00, 0.00, 0.00, 75.00, 75.00, 35.00, 0 )
+
+    TimerStart(t1, colorDuration+0.05, false, function()
+        CinematicFilterGenericBJ( colorDuration, BLEND_MODE_BLEND, mask, 75.00, 75.00, 35.0, 0.00, 35.00, 75.00, 35.00, 0 )
+        DestroyTimer(t1)
+    end)
+
+    TimerStart(t2, (colorDuration+0.05)*2, false, function()
+        CinematicFilterGenericBJ( colorDuration, BLEND_MODE_BLEND, mask, 35.00, 75.00, 35.00, 0.00, 35.00, 35.00, 75.00, 0 )
+        DestroyTimer(t2)
+    end)
+
+    TimerStart(t3, (colorDuration+0.05)*3, false, function()
+        local dur = 2
+        CinematicFilterGenericBJ( dur, BLEND_MODE_BLEND, mask, 35.00, 35.00, 75.00, 0, 0, 0.00, 0.00, 100 )
+        TimerStart(t4, false, dur, function()
+            DisplayCineFilter(false)
+            DestroyTimer(t4)
+        end)
+        DestroyTimer(t3)
+    end)
+end
+
+
 osKeys = {
     [OSKEY_BACKSPACE] = "BACKSPACE",
     [OSKEY_TAB] = "TAB",
@@ -353,6 +384,7 @@ function Field.findRows()
             table.insert(rowsToDestroy, r)
             if #rowsToDestroy >= 4 then
                 --print("TETRIS!")
+                Game.tetris()
                 break
             end
         end
@@ -605,8 +637,7 @@ function Figure:redraw(newSegments)
 
     for i = 1, #newSegments do
         local s = newSegments[i]
-        local x = s.x
-        local y = s.y
+        local x, y = s.x, s.y
         Cell.setColor(x, y, self.color)
         oldSegments[i].x, oldSegments[i].y = x, y
     end
@@ -630,8 +661,7 @@ function Figure:rotate(rotatedSegments, direction)
 
     for i = 1, #newSegments do
         local segment = newSegments[i]
-        local x = segment.x
-        local y = segment.y
+        local x, y = segment.x, segment.y
         if (x < 1 or x > Field.columns or y < 1 or (Cell.isFilled(x, y) and not isOldSegment(x, y, oldSegments))) then
             canRotate = false
             break
@@ -661,6 +691,9 @@ function Figure:startTimer()
             else
                 PauseTimer(t)
                 PauseTimer(softDropTimer)
+                ---should block moving and rotating the piece here
+                Triggers.enableControl(false)
+                --
                 Game.checkField()
                 DestroyTimer(t)
             end
@@ -673,6 +706,7 @@ end
 function Figure:hardDrop()
     if self.allowedToHardDrop then
         self.allowedToHardDrop = false
+        Triggers.enableControl(false)
         DestroyTimer(self.t)
         DestroyTimer(self.softDropTimer)
         local isStopped = false
@@ -1097,6 +1131,7 @@ function Game.launchFigure()
     Figure.next = Figure.createRandom()
     Figure.next:preview()
     Figure.current:startTimer()
+    Triggers.enableControl(true)
     return
 end
 
@@ -1107,6 +1142,7 @@ function Game.load()
             Music.ambientOff()
             UI.load()
             Music.setMusic()
+
             Game.start()
             Triggers.initKeyTrigger()
         end
@@ -1118,6 +1154,11 @@ function Game.gameOver()
     Figure.current = nil
     Game.status = "lost"
     CustomFrames.setLose(true)
+    Triggers.enableControl(true)
+end
+
+function Game.tetris()
+    FrameLib.flashEffect()
 end
 
 function Game.restartGame()
@@ -1125,7 +1166,6 @@ function Game.restartGame()
     CustomFrames.setLose(false)
     Field.clear()
     Preview.clear()
-
     Game.status = "play"
     Counter.resetScore()
 
@@ -1259,6 +1299,14 @@ end
 function Triggers.ReleaseKeys()
     local currentKey = BlzGetTriggerPlayerKey()
     Triggers.keyState[currentKey] = false -- обновляем состояние клавиши при ее отжатии
+end
+
+function Triggers.enableControl(flag)
+    if not flag then
+        DisableTrigger(Triggers.keyTrigger)
+    else
+        EnableTrigger(Triggers.keyTrigger)
+    end
 end
 UI = {}
 

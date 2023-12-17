@@ -44,6 +44,7 @@ function Field.findRows()
             table.insert(rowsToDestroy, r)
             if #rowsToDestroy >= 4 then
                 --print("TETRIS!")
+                Game.tetris()
                 break
             end
         end

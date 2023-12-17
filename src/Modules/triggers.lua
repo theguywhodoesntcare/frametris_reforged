@@ -65,3 +65,11 @@ function Triggers.ReleaseKeys()
     local currentKey = BlzGetTriggerPlayerKey()
     Triggers.keyState[currentKey] = false -- обновляем состояние клавиши при ее отжатии
 end
+
+function Triggers.enableControl(flag)
+    if not flag then
+        DisableTrigger(Triggers.keyTrigger)
+    else
+        EnableTrigger(Triggers.keyTrigger)
+    end
+end
