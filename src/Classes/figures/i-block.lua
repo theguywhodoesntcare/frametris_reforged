@@ -6,6 +6,7 @@ IShape.s1 = {x = 4, y = 19}
 IShape.s2 = {x = 5, y = 19}
 IShape.s3 = {x = 6, y = 19}
 IShape.s4 = {x = 7, y = 19}
+IShape.type = "matrix4"
 table.insert(Figure.shapes, IShape)
 
 function IShape:new()
@@ -17,7 +18,6 @@ function IShape:new()
         {x = IShape.s3.x, y = IShape.s3.y},
         {x = IShape.s4.x, y = IShape.s4.y}
     }
-    iShape.type = "matrix4"
     return iShape
 end
 
@@ -25,6 +25,6 @@ function IShape:rotate(direction)
     --Type: line4
     local newSegments = Line4.rotate(self.segments, direction)
 
-    Figure.rotate(self, newSegments, direction)
+    Figure.rotate(self, newSegments)
 end
 

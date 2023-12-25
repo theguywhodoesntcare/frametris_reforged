@@ -4,9 +4,11 @@ end
 --CUSTOM_CODE
 FrameLib = {}
 
+
 function FrameLib.world()
     return BlzGetOriginFrame(ORIGIN_FRAME_WORLD_FRAME, 0)
 end
+
 
 function FrameLib.HideDefaultUI()
     local gameui = BlzGetOriginFrame(ORIGIN_FRAME_GAME_UI, 0)
@@ -644,7 +646,7 @@ function Figure:redraw(newSegments)
     return
 end
 
-function Figure:rotate(rotatedSegments, direction)
+function Figure:rotate(rotatedSegments)
     local oldSegments = self.segments
     local newSegments = rotatedSegments
 
@@ -814,6 +816,7 @@ IShape.s1 = {x = 4, y = 19}
 IShape.s2 = {x = 5, y = 19}
 IShape.s3 = {x = 6, y = 19}
 IShape.s4 = {x = 7, y = 19}
+IShape.type = "matrix4"
 table.insert(Figure.shapes, IShape)
 
 function IShape:new()
@@ -825,7 +828,6 @@ function IShape:new()
         {x = IShape.s3.x, y = IShape.s3.y},
         {x = IShape.s4.x, y = IShape.s4.y}
     }
-    iShape.type = "matrix4"
     return iShape
 end
 
@@ -833,7 +835,7 @@ function IShape:rotate(direction)
     --Type: line4
     local newSegments = Line4.rotate(self.segments, direction)
 
-    Figure.rotate(self, newSegments, direction)
+    Figure.rotate(self, newSegments)
 end
 
 
@@ -845,6 +847,7 @@ JShape.s1 = {x = 4, y = 20}
 JShape.s2 = {x = 4, y = 19}
 JShape.s3 = {x = 5, y = 19} --center
 JShape.s4 = {x = 6, y = 19}
+JShape.type = "matrix3"
 table.insert(Figure.shapes, JShape)
 
 function JShape:new()
@@ -856,7 +859,6 @@ function JShape:new()
         {x = JShape.s1.x, y = JShape.s1.y},
         {x = JShape.s4.x, y = JShape.s4.y}
     }
-    jShape.type = "matrix3"
     return jShape
 end
 
@@ -864,7 +866,7 @@ function JShape:rotate(direction)
     --Type: matrix3
     local newSegments = Matrix3.rotate(self.segments, direction)
 
-    Figure.rotate(self, newSegments, direction)
+    Figure.rotate(self, newSegments)
 end
 
 
@@ -876,6 +878,7 @@ LShape.s1 = {x = 4, y = 19}
 LShape.s2 = {x = 5, y = 19} --center
 LShape.s3 = {x = 6, y = 19}
 LShape.s4 = {x = 6, y = 20}
+LShape.type = "matrix3"
 table.insert(Figure.shapes, LShape)
 
 function LShape:new()
@@ -887,7 +890,6 @@ function LShape:new()
         {x = LShape.s3.x, y = LShape.s3.y},
         {x = LShape.s4.x, y = LShape.s4.y}
     }
-    lShape.type = "matrix3"
     return lShape
 end
 
@@ -895,7 +897,7 @@ function LShape:rotate(direction)
     --Type: matrix3
     local newSegments = Matrix3.rotate(self.segments, direction)
 
-    Figure.rotate(self, newSegments, direction)
+    Figure.rotate(self, newSegments)
 end
 
 OShape = {}
@@ -906,6 +908,7 @@ OShape.s1 = {x = 5, y = 20}
 OShape.s2 = {x = 6, y = 20}
 OShape.s3 = {x = 5, y = 19}
 OShape.s4 = {x = 6, y = 19}
+OShape.type = "matrix4"
 table.insert(Figure.shapes, OShape)
 
 function OShape:new()
@@ -917,7 +920,6 @@ function OShape:new()
         {x = OShape.s3.x, y = OShape.s3.y},
         {x = OShape.s4.x, y = OShape.s4.y}
     }
-    oShape.type = "matrix4"
     return oShape
 end
 
@@ -934,6 +936,7 @@ SShape.s1 = {x = 4, y = 19}
 SShape.s2 = {x = 5, y = 19} --center
 SShape.s3 = {x = 5, y = 20}
 SShape.s4 = {x = 6, y = 20}
+SShape.type = "matrix3"
 table.insert(Figure.shapes, SShape)
 
 function SShape:new()
@@ -945,7 +948,6 @@ function SShape:new()
         {x = SShape.s3.x, y = SShape.s3.y},
         {x = SShape.s4.x, y = SShape.s4.y}
     }
-    sShape.type = "matrix3"
     return sShape
 end
 
@@ -953,7 +955,7 @@ function SShape:rotate(direction)
     --Type: matrix3
     local newSegments = Matrix3.rotate(self.segments, direction)
 
-    Figure.rotate(self, newSegments, direction)
+    Figure.rotate(self, newSegments)
 end
 TShape = {}
 TShape.__index = TShape
@@ -963,6 +965,7 @@ TShape.s1 = {x = 4, y = 19}
 TShape.s2 = {x = 5, y = 19} --center
 TShape.s3 = {x = 6, y = 19}
 TShape.s4 = {x = 5, y = 20}
+TShape.type = "matrix3"
 table.insert(Figure.shapes, TShape)
 
 function TShape:new()
@@ -974,7 +977,6 @@ function TShape:new()
         {x = TShape.s3.x, y = TShape.s3.y},
         {x = TShape.s4.x, y = TShape.s4.y}
     }
-    tShape.type = "matrix3"
     return tShape
 end
 
@@ -982,7 +984,7 @@ function TShape:rotate(direction)
     --Type: matrix3
     local newSegments = Matrix3.rotate(self.segments, direction)
 
-    Figure.rotate(self, newSegments, direction)
+    Figure.rotate(self, newSegments)
 end
 ZShape = {}
 ZShape.__index = ZShape
@@ -992,6 +994,7 @@ ZShape.s1 = {x = 4, y = 20}
 ZShape.s2 = {x = 5, y = 20}
 ZShape.s3 = {x = 5, y = 19} --center
 ZShape.s4 = {x = 6, y = 19}
+ZShape.type = "matrix3"
 table.insert(Figure.shapes, ZShape)
 
 function ZShape:new()
@@ -1003,7 +1006,6 @@ function ZShape:new()
         {x = ZShape.s1.x, y = ZShape.s1.y},
         {x = ZShape.s4.x, y = ZShape.s4.y}
     }
-    zShape.type = "matrix3"
     return zShape
 end
 
@@ -1011,7 +1013,7 @@ function ZShape:rotate(direction)
     --Type: matrix3
     local newSegments = Matrix3.rotate(self.segments, direction)
 
-    Figure.rotate(self, newSegments, direction)
+    Figure.rotate(self, newSegments)
 end
 Border = {}
 
@@ -1139,6 +1141,7 @@ function Game.load()
     do
         function MarkGameStarted()
             math.randomseed(os.time())
+            BlzShowTerrain(false)
             Music.ambientOff()
             UI.load()
             Music.setMusic()
@@ -1181,6 +1184,16 @@ Keys.hardDropKey = OSKEY_SPACE
 Keys.rotateRightKey = OSKEY_W
 Keys.rotateLeftKey = OSKEY_Q
 Keys.restartKey = OSKEY_ESCAPE
+
+
+KeyFunctions = {
+    [Keys.leftKey] = function(figure) figure:moveSide("left") end,
+    [Keys.rightKey] = function(figure) figure:moveSide("right") end,
+    [Keys.softDropKey] = function() Triggers.keyState[Keys.softDropKey] = true end,
+    [Keys.hardDropKey] = function(figure) figure:hardDrop() end,
+    [Keys.rotateRightKey] = function(figure) figure:rotate("clockwise") end,
+    [Keys.rotateLeftKey] = function(figure) figure:rotate("counter") end
+}
 Music = {}
 
 function Music.setMusic()
@@ -1238,6 +1251,7 @@ Triggers.keyTrigger = CreateTrigger()
 Triggers.releaseTrigger = CreateTrigger()
 Triggers.keyState = {}
 
+
 function Triggers.initKeyTrigger()
     local trigger = Triggers.keyTrigger
     local releaseTrigger = Triggers.releaseTrigger
@@ -1251,55 +1265,26 @@ function Triggers.initKeyTrigger()
     TriggerAddCondition(releaseTrigger, Condition(Triggers.ReleaseKeys))
 end
 
+
 function Triggers.ControlKeys()
     local currentFigure = Figure.current
     local currentKey = BlzGetTriggerPlayerKey()
-    if currentFigure ~= nil then
-        if currentKey == Keys.leftKey then
-            if not Triggers.keyState[currentKey] then --проверяем состояние клавиши
-                currentFigure:moveSide("left")
-                Triggers.keyState[currentKey] = true --обновляем состояние клавиши
-            end
-        end
-        if currentKey == Keys.rightKey then
-            if not Triggers.keyState[currentKey] then
-                currentFigure:moveSide("right")
-                Triggers.keyState[currentKey] = true
-            end
-        end
-        if currentKey == Keys.softDropKey then
-            if not Triggers.keyState[currentKey] then
-                Triggers.keyState[currentKey] = true
-            end
-        end
-        if currentKey == Keys.hardDropKey then
-            if not Triggers.keyState[currentKey] then
-                currentFigure:hardDrop()
-                Triggers.keyState[currentKey] = true
-            end
-        end
-        if currentKey == Keys.rotateRightKey then
-            if not Triggers.keyState[currentKey] then
-                currentFigure:rotate("clockwise")
-                Triggers.keyState[currentKey] = true
-            end
-        end
-        if currentKey == Keys.rotateLeftKey then
-            if not Triggers.keyState[currentKey] then
-                currentFigure:rotate("counter")
-                Triggers.keyState[currentKey] = true
-            end
-        end
+    if currentFigure ~= nil and KeyFunctions[currentKey] and not Triggers.keyState[currentKey] then
+        KeyFunctions[currentKey](currentFigure)
+        Triggers.keyState[currentKey] = true
+        return
     end
     if currentKey == Keys.restartKey and Game.status == "lost" then
         Game.restartGame()
     end
 end
 
+
 function Triggers.ReleaseKeys()
     local currentKey = BlzGetTriggerPlayerKey()
     Triggers.keyState[currentKey] = false -- обновляем состояние клавиши при ее отжатии
 end
+
 
 function Triggers.enableControl(flag)
     if not flag then

@@ -33,6 +33,7 @@ function Game.load()
     do
         function MarkGameStarted()
             math.randomseed(os.time())
+            BlzShowTerrain(false)
             Music.ambientOff()
             UI.load()
             Music.setMusic()

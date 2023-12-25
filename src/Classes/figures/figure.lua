@@ -49,7 +49,7 @@ function Figure:redraw(newSegments)
     return
 end
 
-function Figure:rotate(rotatedSegments, direction)
+function Figure:rotate(rotatedSegments)
     local oldSegments = self.segments
     local newSegments = rotatedSegments
 

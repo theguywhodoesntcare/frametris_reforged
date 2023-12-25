@@ -6,6 +6,7 @@ OShape.s1 = {x = 5, y = 20}
 OShape.s2 = {x = 6, y = 20}
 OShape.s3 = {x = 5, y = 19}
 OShape.s4 = {x = 6, y = 19}
+OShape.type = "matrix4"
 table.insert(Figure.shapes, OShape)
 
 function OShape:new()
@@ -17,7 +18,6 @@ function OShape:new()
         {x = OShape.s3.x, y = OShape.s3.y},
         {x = OShape.s4.x, y = OShape.s4.y}
     }
-    oShape.type = "matrix4"
     return oShape
 end
 

@@ -6,6 +6,7 @@ SShape.s1 = {x = 4, y = 19}
 SShape.s2 = {x = 5, y = 19} --center
 SShape.s3 = {x = 5, y = 20}
 SShape.s4 = {x = 6, y = 20}
+SShape.type = "matrix3"
 table.insert(Figure.shapes, SShape)
 
 function SShape:new()
@@ -17,7 +18,6 @@ function SShape:new()
         {x = SShape.s3.x, y = SShape.s3.y},
         {x = SShape.s4.x, y = SShape.s4.y}
     }
-    sShape.type = "matrix3"
     return sShape
 end
 
@@ -25,5 +25,5 @@ function SShape:rotate(direction)
     --Type: matrix3
     local newSegments = Matrix3.rotate(self.segments, direction)
 
-    Figure.rotate(self, newSegments, direction)
+    Figure.rotate(self, newSegments)
 end
