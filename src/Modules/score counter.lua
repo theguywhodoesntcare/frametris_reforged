@@ -19,7 +19,7 @@ function Counter.rowsReward(numb)
 end
 
 function Counter.update(additive)
-    if Game.status == "play" then
+    if Game.status then
         Counter.score = Counter.score + additive
         if Counter.highScore < Counter.score then
             Counter.highScore = Counter.score

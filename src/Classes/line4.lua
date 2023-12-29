@@ -11,9 +11,9 @@ function Line4.rotate(segmentsWorld, direction)
 
     for i = 1, #segmentsWorld do
         local localX, localY = segmentsWorld[i].x - centerX, segmentsWorld[i].y - centerY
-        if direction == "clockwise" then
+        if direction then
             localX, localY = localY, -localX
-        elseif direction == "counter" then
+        elseif not direction then
             localX, localY = -localY, localX
         end
         newMatrix[i].x, newMatrix[i].y = Line4.custom_round(localX + centerX, centerX), Line4.custom_round(localY + centerY, centerY)

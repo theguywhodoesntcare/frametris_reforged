@@ -9,10 +9,10 @@ Keys.restartKey = OSKEY_ESCAPE
 
 
 KeyFunctions = {
-    [Keys.leftKey] = function(figure) figure:moveSide("left") end,
-    [Keys.rightKey] = function(figure) figure:moveSide("right") end,
+    [Keys.leftKey] = function(figure) figure:moveSide(true) end, --true = left
+    [Keys.rightKey] = function(figure) figure:moveSide(false) end, --false = right
     [Keys.softDropKey] = function() Triggers.keyState[Keys.softDropKey] = true end,
     [Keys.hardDropKey] = function(figure) figure:hardDrop() end,
-    [Keys.rotateRightKey] = function(figure) figure:rotate("clockwise") end,
-    [Keys.rotateLeftKey] = function(figure) figure:rotate("counter") end
+    [Keys.rotateRightKey] = function(figure) figure:rotate(true) end, --true = clockwise
+    [Keys.rotateLeftKey] = function(figure) figure:rotate(false) end --false = counter clockwise
 }

@@ -170,7 +170,7 @@ function Figure:moveSide(direction)
     end
     local val = 0
     local canMove = true
-    if direction == "left" then
+    if direction then
         val = -1
         for i = 1, #segments do
             local s = segments[i]
@@ -179,7 +179,7 @@ function Figure:moveSide(direction)
                 break
             end
         end
-    elseif direction == "right" then
+    else
         val = 1
         for i = 1, #segments do
             local s = segments[i]

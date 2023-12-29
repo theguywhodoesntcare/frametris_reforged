@@ -4,11 +4,9 @@ end
 --CUSTOM_CODE
 FrameLib = {}
 
-
 function FrameLib.world()
     return BlzGetOriginFrame(ORIGIN_FRAME_WORLD_FRAME, 0)
 end
-
 
 function FrameLib.HideDefaultUI()
     local gameui = BlzGetOriginFrame(ORIGIN_FRAME_GAME_UI, 0)
@@ -473,9 +471,9 @@ function Line4.rotate(segmentsWorld, direction)
 
     for i = 1, #segmentsWorld do
         local localX, localY = segmentsWorld[i].x - centerX, segmentsWorld[i].y - centerY
-        if direction == "clockwise" then
+        if direction then
             localX, localY = localY, -localX
-        elseif direction == "counter" then
+        elseif not direction then
             localX, localY = -localY, localX
         end
         newMatrix[i].x, newMatrix[i].y = Line4.custom_round(localX + centerX, centerX), Line4.custom_round(localY + centerY, centerY)
@@ -524,9 +522,9 @@ function Matrix3.rotate(segmentsWorld, direction)
 
     for i = 2, #segmentsWorld do
         local localX, localY = segmentsWorld[i].x - centerX, segmentsWorld[i].y - centerY
-        if direction == "clockwise" then
+        if direction then
             localX, localY = localY, -localX
-        elseif direction == "counter" then
+        elseif not direction then
             localX, localY = -localY, localX
         end
         newMatrix[i].x, newMatrix[i].y = localX + centerX, localY + centerY
@@ -767,7 +765,7 @@ function Figure:moveSide(direction)
     end
     local val = 0
     local canMove = true
-    if direction == "left" then
+    if direction then
         val = -1
         for i = 1, #segments do
             local s = segments[i]
@@ -776,7 +774,7 @@ function Figure:moveSide(direction)
                 break
             end
         end
-    elseif direction == "right" then
+    else
         val = 1
         for i = 1, #segments do
             local s = segments[i]
@@ -1071,7 +1069,13 @@ function CustomFrames.setMusicTitle(path)
 end
 
 function CustomFrames.displayControls()
-    local text = "Controls:|n|n|cffffff00"..osKeys[Keys.leftKey].."|r — Move Left, |cffffff00"..osKeys[Keys.rightKey].."|r — Move Right|n|n|cffffff00"..osKeys[Keys.rotateLeftKey].."|r — Rotate CCW, |cffffff00"..osKeys[Keys.rotateRightKey].."|r — Rotate CW|n|n|cffffff00"..osKeys[Keys.softDropKey].." (hold)|r — Soft Drop, |cffffff00"..osKeys[Keys.hardDropKey].."|r — Hard Drop"
+    local text = "Controls:|n|n" ..
+            "|cffffff00" .. osKeys[Keys.leftKey] .. "|r — Move Left, " ..
+            "|cffffff00" .. osKeys[Keys.rightKey] .. "|r — Move Right|n|n" ..
+            "|cffffff00" .. osKeys[Keys.rotateLeftKey] .. "|r — Rotate CCW, " ..
+            "|cffffff00" .. osKeys[Keys.rotateRightKey] .. "|r — Rotate CW|n|n" ..
+            "|cffffff00" .. osKeys[Keys.softDropKey] .. " (hold)|r — Soft Drop, " ..
+            "|cffffff00" .. osKeys[Keys.hardDropKey] .. "|r — Hard Drop"
     local textFrame = FrameLib.CreateText(FrameLib.world(), 0.11, 0.3, 0.2, text, 2)
     BlzFrameSetScale(textFrame, 1.20)
 end
@@ -1107,7 +1111,7 @@ function CustomFrames.createStatsFrame()
     CustomFrames.score = text
 end
 Game = {}
-Game.status = "play"
+Game.status = true
 
 function Game.start()
     local figure = Figure.createRandom()
@@ -1155,7 +1159,7 @@ end
 function Game.gameOver()
     Figure.next = nil
     Figure.current = nil
-    Game.status = "lost"
+    Game.status = false
     CustomFrames.setLose(true)
     Triggers.enableControl(true)
 end
@@ -1169,7 +1173,7 @@ function Game.restartGame()
     CustomFrames.setLose(false)
     Field.clear()
     Preview.clear()
-    Game.status = "play"
+    Game.status = true
     Counter.resetScore()
 
     Game.start()
@@ -1187,12 +1191,12 @@ Keys.restartKey = OSKEY_ESCAPE
 
 
 KeyFunctions = {
-    [Keys.leftKey] = function(figure) figure:moveSide("left") end,
-    [Keys.rightKey] = function(figure) figure:moveSide("right") end,
+    [Keys.leftKey] = function(figure) figure:moveSide(true) end, --true = left
+    [Keys.rightKey] = function(figure) figure:moveSide(false) end, --false = right
     [Keys.softDropKey] = function() Triggers.keyState[Keys.softDropKey] = true end,
     [Keys.hardDropKey] = function(figure) figure:hardDrop() end,
-    [Keys.rotateRightKey] = function(figure) figure:rotate("clockwise") end,
-    [Keys.rotateLeftKey] = function(figure) figure:rotate("counter") end
+    [Keys.rotateRightKey] = function(figure) figure:rotate(true) end, --true = clockwise
+    [Keys.rotateLeftKey] = function(figure) figure:rotate(false) end --false = counter clockwise
 }
 Music = {}
 
@@ -1206,7 +1210,6 @@ end
  function Music.ambientOff()
      VolumeGroupSetVolume( SOUND_VOLUMEGROUP_AMBIENTSOUNDS, 0.00 )
  end
-
 Counter = {}
 Counter.score = 0
 Counter.highScore = 0
@@ -1228,7 +1231,7 @@ function Counter.rowsReward(numb)
 end
 
 function Counter.update(additive)
-    if Game.status == "play" then
+    if Game.status then
         Counter.score = Counter.score + additive
         if Counter.highScore < Counter.score then
             Counter.highScore = Counter.score
@@ -1256,17 +1259,17 @@ function Triggers.initKeyTrigger()
     local trigger = Triggers.keyTrigger
     local releaseTrigger = Triggers.releaseTrigger
 
-    for key, value in pairs(Keys) do
+    for _, value in pairs(Keys) do
         BlzTriggerRegisterPlayerKeyEvent(trigger, GetLocalPlayer(), value, 0, true)
         BlzTriggerRegisterPlayerKeyEvent(releaseTrigger, GetLocalPlayer(), value, 0, false)
     end
 
-    TriggerAddCondition(trigger, Condition(Triggers.ControlKeys))
-    TriggerAddCondition(releaseTrigger, Condition(Triggers.ReleaseKeys))
+    TriggerAddCondition(trigger, Condition(Triggers.controlKeys))
+    TriggerAddCondition(releaseTrigger, Condition(Triggers.releaseKeys))
 end
 
 
-function Triggers.ControlKeys()
+function Triggers.controlKeys()
     local currentFigure = Figure.current
     local currentKey = BlzGetTriggerPlayerKey()
     if currentFigure ~= nil and KeyFunctions[currentKey] and not Triggers.keyState[currentKey] then
@@ -1274,13 +1277,13 @@ function Triggers.ControlKeys()
         Triggers.keyState[currentKey] = true
         return
     end
-    if currentKey == Keys.restartKey and Game.status == "lost" then
+    if currentKey == Keys.restartKey and not Game.status then
         Game.restartGame()
     end
 end
 
 
-function Triggers.ReleaseKeys()
+function Triggers.releaseKeys()
     local currentKey = BlzGetTriggerPlayerKey()
     Triggers.keyState[currentKey] = false -- обновляем состояние клавиши при ее отжатии
 end
@@ -1315,9 +1318,16 @@ end
 
 function UI.editMenu()
     BlzFrameSetVisible(BlzGetFrameByName("UpperButtonBarFrame",0), true)
-    BlzFrameSetVisible(BlzGetFrameByName("UpperButtonBarAlliesButton",0), false)
-    BlzFrameSetVisible(BlzGetFrameByName("UpperButtonBarChatButton",0), false)
-    BlzFrameSetVisible(BlzGetFrameByName("UpperButtonBarQuestsButton",0), false)
+
+    local names = {
+        "UpperButtonBarAlliesButton",
+        "UpperButtonBarChatButton",
+        "UpperButtonBarQuestsButton"
+    }
+
+    for _, v in ipairs(names) do
+        BlzFrameSetVisible(BlzGetFrameByName(v,0), false)
+    end
 
     local tooltip = BlzGetOriginFrame(ORIGIN_FRAME_UBERTOOLTIP, 0)
     BlzFrameClearAllPoints(tooltip)
@@ -1329,10 +1339,9 @@ function UI.enableFPSFrame()
     local resourceBarFrame = BlzGetFrameByName("ResourceBarFrame", 0)
     BlzFrameSetVisible(resourceBarFrame, true)
 
-    BlzFrameSetVisible(BlzFrameGetChild(resourceBarFrame, 0), false)
-    BlzFrameSetVisible(BlzFrameGetChild(resourceBarFrame, 1), false)
-    BlzFrameSetVisible(BlzFrameGetChild(resourceBarFrame, 2), false)
-    BlzFrameSetVisible(BlzFrameGetChild(resourceBarFrame, 3), false)
+    for i = 0, 3 do
+        BlzFrameSetVisible(BlzFrameGetChild(resourceBarFrame, i), false)
+    end
 
     local ResourseBarTextFrames = {
         BlzGetFrameByName("ResourceBarGoldText", 0),

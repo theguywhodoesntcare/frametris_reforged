@@ -1,5 +1,5 @@
 Game = {}
-Game.status = "play"
+Game.status = true
 
 function Game.start()
     local figure = Figure.createRandom()
@@ -47,7 +47,7 @@ end
 function Game.gameOver()
     Figure.next = nil
     Figure.current = nil
-    Game.status = "lost"
+    Game.status = false
     CustomFrames.setLose(true)
     Triggers.enableControl(true)
 end
@@ -61,7 +61,7 @@ function Game.restartGame()
     CustomFrames.setLose(false)
     Field.clear()
     Preview.clear()
-    Game.status = "play"
+    Game.status = true
     Counter.resetScore()
 
     Game.start()

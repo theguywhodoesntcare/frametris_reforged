@@ -38,7 +38,13 @@ function CustomFrames.setMusicTitle(path)
 end
 
 function CustomFrames.displayControls()
-    local text = "Controls:|n|n|cffffff00"..osKeys[Keys.leftKey].."|r — Move Left, |cffffff00"..osKeys[Keys.rightKey].."|r — Move Right|n|n|cffffff00"..osKeys[Keys.rotateLeftKey].."|r — Rotate CCW, |cffffff00"..osKeys[Keys.rotateRightKey].."|r — Rotate CW|n|n|cffffff00"..osKeys[Keys.softDropKey].." (hold)|r — Soft Drop, |cffffff00"..osKeys[Keys.hardDropKey].."|r — Hard Drop"
+    local text = "Controls:|n|n" ..
+            "|cffffff00" .. osKeys[Keys.leftKey] .. "|r — Move Left, " ..
+            "|cffffff00" .. osKeys[Keys.rightKey] .. "|r — Move Right|n|n" ..
+            "|cffffff00" .. osKeys[Keys.rotateLeftKey] .. "|r — Rotate CCW, " ..
+            "|cffffff00" .. osKeys[Keys.rotateRightKey] .. "|r — Rotate CW|n|n" ..
+            "|cffffff00" .. osKeys[Keys.softDropKey] .. " (hold)|r — Soft Drop, " ..
+            "|cffffff00" .. osKeys[Keys.hardDropKey] .. "|r — Hard Drop"
     local textFrame = FrameLib.CreateText(FrameLib.world(), 0.11, 0.3, 0.2, text, 2)
     BlzFrameSetScale(textFrame, 1.20)
 end

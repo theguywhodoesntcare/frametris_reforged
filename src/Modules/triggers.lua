@@ -8,17 +8,17 @@ function Triggers.initKeyTrigger()
     local trigger = Triggers.keyTrigger
     local releaseTrigger = Triggers.releaseTrigger
 
-    for key, value in pairs(Keys) do
+    for _, value in pairs(Keys) do
         BlzTriggerRegisterPlayerKeyEvent(trigger, GetLocalPlayer(), value, 0, true)
         BlzTriggerRegisterPlayerKeyEvent(releaseTrigger, GetLocalPlayer(), value, 0, false)
     end
 
-    TriggerAddCondition(trigger, Condition(Triggers.ControlKeys))
-    TriggerAddCondition(releaseTrigger, Condition(Triggers.ReleaseKeys))
+    TriggerAddCondition(trigger, Condition(Triggers.controlKeys))
+    TriggerAddCondition(releaseTrigger, Condition(Triggers.releaseKeys))
 end
 
 
-function Triggers.ControlKeys()
+function Triggers.controlKeys()
     local currentFigure = Figure.current
     local currentKey = BlzGetTriggerPlayerKey()
     if currentFigure ~= nil and KeyFunctions[currentKey] and not Triggers.keyState[currentKey] then
@@ -26,13 +26,13 @@ function Triggers.ControlKeys()
         Triggers.keyState[currentKey] = true
         return
     end
-    if currentKey == Keys.restartKey and Game.status == "lost" then
+    if currentKey == Keys.restartKey and not Game.status then
         Game.restartGame()
     end
 end
 
 
-function Triggers.ReleaseKeys()
+function Triggers.releaseKeys()
     local currentKey = BlzGetTriggerPlayerKey()
     Triggers.keyState[currentKey] = false -- обновляем состояние клавиши при ее отжатии
 end

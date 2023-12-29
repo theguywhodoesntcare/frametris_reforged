@@ -20,9 +20,16 @@ end
 
 function UI.editMenu()
     BlzFrameSetVisible(BlzGetFrameByName("UpperButtonBarFrame",0), true)
-    BlzFrameSetVisible(BlzGetFrameByName("UpperButtonBarAlliesButton",0), false)
-    BlzFrameSetVisible(BlzGetFrameByName("UpperButtonBarChatButton",0), false)
-    BlzFrameSetVisible(BlzGetFrameByName("UpperButtonBarQuestsButton",0), false)
+
+    local names = {
+        "UpperButtonBarAlliesButton",
+        "UpperButtonBarChatButton",
+        "UpperButtonBarQuestsButton"
+    }
+
+    for _, v in ipairs(names) do
+        BlzFrameSetVisible(BlzGetFrameByName(v,0), false)
+    end
 
     local tooltip = BlzGetOriginFrame(ORIGIN_FRAME_UBERTOOLTIP, 0)
     BlzFrameClearAllPoints(tooltip)
@@ -34,10 +41,9 @@ function UI.enableFPSFrame()
     local resourceBarFrame = BlzGetFrameByName("ResourceBarFrame", 0)
     BlzFrameSetVisible(resourceBarFrame, true)
 
-    BlzFrameSetVisible(BlzFrameGetChild(resourceBarFrame, 0), false)
-    BlzFrameSetVisible(BlzFrameGetChild(resourceBarFrame, 1), false)
-    BlzFrameSetVisible(BlzFrameGetChild(resourceBarFrame, 2), false)
-    BlzFrameSetVisible(BlzFrameGetChild(resourceBarFrame, 3), false)
+    for i = 0, 3 do
+        BlzFrameSetVisible(BlzFrameGetChild(resourceBarFrame, i), false)
+    end
 
     local ResourseBarTextFrames = {
         BlzGetFrameByName("ResourceBarGoldText", 0),
